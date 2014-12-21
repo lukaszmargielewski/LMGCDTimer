@@ -10,6 +10,17 @@
 
 @interface ViewController : UIViewController
 
+@property (nonatomic, strong) IBOutlet UILabel *cpuPercentLabel;
+
+@property (nonatomic, strong) IBOutlet UILabel *timerLabelLow;
+@property (nonatomic, strong) IBOutlet UILabel *timerLabelDef;
+@property (nonatomic, strong) IBOutlet UILabel *timerLabelBack;
+@property (nonatomic, strong) IBOutlet UILabel *timerLabelHigh;
+
+-(IBAction)stopWatchdog:(id)sender;
+-(IBAction)startWatchdog:(id)sender;
+
+-(IBAction)scheduleDeadlock:(id)sender;
 
 @end
 
