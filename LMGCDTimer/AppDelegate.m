@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  Deadlocketector
+//  LMGCDTimer
 //
 //  Created by Lukasz Margielewski on 21/12/2014.
 //  Copyright (c) 2014 Lukasz Margielewski. All rights reserved.
@@ -8,9 +8,6 @@
 
 #import "AppDelegate.h"
 #import "LMGCDWatchdog.h"
-#import "DDLog.h"
-#import "DDASLLogger.h"
-#import "DDTTYLogger.h"
 
 
 @interface AppDelegate ()
@@ -22,11 +19,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    
-    
-    // Configure CocoaLumberjack
-    [DDLog addLogger:[DDASLLogger sharedInstance]];
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];
     
     [[LMGCDWatchdog singleton] startWatchDogTimerWithInterval:0.2 withDuration:0];
     

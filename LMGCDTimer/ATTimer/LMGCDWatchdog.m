@@ -14,11 +14,8 @@
 #include <mach/mach.h>
 #include <mach/processor_info.h>
 #include <mach/mach_host.h>
-#import "DDLog.h"
 
-#ifndef ddLogLevel_Defined
-int ddLogLevel = DDLogLevelVerbose;
-#endif
+
 @implementation LMGCDWatchdog{
     
     
