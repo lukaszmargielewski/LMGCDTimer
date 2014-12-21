@@ -1,5 +1,5 @@
 //
-//  ATTimer.h
+//  LMGCDTimer.h
 //  FF
 //
 //  Created by Lukasz Margielewski on 16/12/2014.

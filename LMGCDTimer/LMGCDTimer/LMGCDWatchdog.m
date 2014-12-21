@@ -1,5 +1,5 @@
 //
-//  ATDispatcher.m
+//  LMGCDWatchdog.m
 //  FF
 //
 //  Created by Lukasz Margielewski on 10/12/2014.
@@ -56,13 +56,13 @@
     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
     NSString *bundleId = infoDict[@"CFBundleIdentifier"];
     
-    NSString *label = [NSString stringWithFormat:@"%@.ATDispatcher", bundleId];
+    NSString *label = [NSString stringWithFormat:@"%@.LMGCDWatchdog", bundleId];
     NSUInteger maxBufferCount = sizeof(char) * (label.length + 1);
     
     char *_writeQueueLabel = (char *)malloc(maxBufferCount); // +1 for NULL termination
     
     BOOL ok = [label getCString:_writeQueueLabel maxLength:maxBufferCount encoding:NSUTF8StringEncoding];
-    NSAssert(ok, @"Something wrong with ATDispatcher queue label c string generation");
+    NSAssert(ok, @"Something wrong with LMGCDWatchdog queue label c string generation");
     
     _queue = dispatch_queue_create(_writeQueueLabel, DISPATCH_QUEUE_SERIAL);
     
@@ -79,13 +79,13 @@
     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
     NSString *bundleId = infoDict[@"CFBundleIdentifier"];
     
-    NSString *label = [NSString stringWithFormat:@"%@.ATDispatcher.watchdog", bundleId];
+    NSString *label = [NSString stringWithFormat:@"%@.LMGCDWatchdog.watchdog", bundleId];
     NSUInteger maxBufferCount = sizeof(char) * (label.length + 1);
     
     char *_writeQueueLabel = (char *)malloc(maxBufferCount); // +1 for NULL termination
     
     BOOL ok = [label getCString:_writeQueueLabel maxLength:maxBufferCount encoding:NSUTF8StringEncoding];
-    NSAssert(ok, @"Something wrong with ATDispatcher queue label c string generation");
+    NSAssert(ok, @"Something wrong with LMGCDWatchdog queue label c string generation");
     
     _watchdog_queue = dispatch_queue_create(_writeQueueLabel, DISPATCH_QUEUE_SERIAL);
     

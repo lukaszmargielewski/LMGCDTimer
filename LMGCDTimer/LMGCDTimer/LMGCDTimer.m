@@ -1,5 +1,5 @@
 //
-//  ATTimer.m
+//  LMGCDTimer.m
 //  FF
 //
 //  Created by Lukasz Margielewski on 16/12/2014.
@@ -40,8 +40,8 @@
 }
 -(id)initWithInterval:(NSTimeInterval)interval duration:(NSTimeInterval)duration leeway:(NSTimeInterval)leeway repeat:(BOOL)repeat startImmidiately:(BOOL)immidiate queue:(dispatch_queue_t)queue block:(void(^)())block{
     
-    NSAssert(queue != nil && queue != NULL, @"ATTimer queue must not be nil");
-    NSAssert(block != nil, @"ATTimer block must not be nil");
+    NSAssert(queue != nil && queue != NULL, @"LMGCDTimer queue must not be nil");
+    NSAssert(block != nil, @"LMGCDTimer block must not be nil");
     
     self = [super init];
     

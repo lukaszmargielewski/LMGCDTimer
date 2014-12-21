@@ -1,5 +1,5 @@
 //
-//  ATDispatcher.h
+//  LMGCDWatchdog.h
 //  FF
 //
 //  Created by Lukasz Margielewski on 10/12/2014.
