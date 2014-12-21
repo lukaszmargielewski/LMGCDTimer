@@ -15,6 +15,11 @@
 #include <mach/processor_info.h>
 #include <mach/mach_host.h>
 
+#include <signal.h>
+#include <pthread.h>
+#include <execinfo.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 @implementation LMGCDWatchdog{
     
@@ -279,27 +284,59 @@
         thread_count = 0;
     }
     
-    /* Suspend all but the current thread. */
+    void *callstack[128];
+    
+    ///*
+    printf("--- %i threads (self: %i): ", thread_count, pl_mach_thread_self());
+    
     for (mach_msg_type_number_t i = 0; i < thread_count; i++) {
-        if (threads[i] != pl_mach_thread_self())
-            thread_suspend(threads[i]);
-    }
+        printf("%i, ", threads[i]);}
     
+    printf("\n");
     
-    uint32_t thread_number = 0;
+    char name[256];
+    
     for (mach_msg_type_number_t i = 0; i < thread_count; i++) {
         
         thread_t thread = threads[i];
         
+        if (pl_mach_thread_self() == thread) {
+            printf("%i. thread: self - skipping self\n", i + 1);
+            
+        }
+        
+        pthread_t pt = pthread_from_mach_thread_np(thread);
+        
+        if (pt) {
+            name[0] = '\0';
+            int rc = pthread_getname_np(pt, name, sizeof name);
+            NSLog(@"mach thread %u: getname returned %d: %s", thread, rc, name);
+        } else {
+            NSLog(@"mach thread %u: no pthread found", thread);
+        }
+        
+        
+        
+        int framesC = GetCallstack(pt, callstack, sizeof(callstack));
+        
+        printf("%i. thread: %i backtrace() returned %d addresses\n", i + 1, thread, framesC);
+        
+        char** strs = backtrace_symbols(callstack, framesC);
+        for(int a = 0; a < framesC; ++a) {
+            if(strs[a])
+                printf("%s\n", strs[a]);
+            else
+                break;
+        }
+        free(strs);
+        
     }
     
-    /* Clean up the thread array */
-    for (mach_msg_type_number_t i = 0; i < thread_count; i++) {
-        if (threads[i] != pl_mach_thread_self())
-            thread_resume(threads[i]);
-        
-        mach_port_deallocate(mach_task_self(), threads[i]);
-    }
+
+    printf("------\n");
+    
+   // */
+    
     
     vm_deallocate(mach_task_self(), (vm_address_t)threads, sizeof(thread_t) * thread_count);
 
@@ -321,14 +358,27 @@ thread_t pl_mach_thread_self (void) {
 }
 
 
-/*
+static pthread_t callingThread = 0;
+static pthread_t targetThread = 0;
+static void** threadCallstackBuffer = NULL;
+static int threadCallstackBufferSize = 0;
+static int threadCallstackCount = 0;
+
+#define CALLSTACK_SIG SIGUSR2
+
+void* GetPCFromUContext(void* ucontext);
 
 __attribute__((noinline))
 static void _callstack_signal_handler(int signr, siginfo_t *info, void *secret) {
-    ThreadId myThread = (ThreadId)pthread_self();
-    //notes << "_callstack_signal_handler, self: " << myThread << ", target: " << targetThread << ", caller: " << callingThread << endl;
-    if(myThread != targetThread) return;
     
+    pthread_t myThread = pthread_self();
+
+    if(myThread != targetThread) {
+    
+        printf("myThread (%lu) != targetThread (%lu) - returning", myThread, targetThread);
+        return;
+    
+    }
     threadCallstackCount = backtrace(threadCallstackBuffer, threadCallstackBufferSize);
     
     // Search for the frame origin.
@@ -344,7 +394,7 @@ static void _callstack_signal_handler(int signr, siginfo_t *info, void *secret) 
     }
     
     // continue calling thread
-    pthread_kill((pthread_t)callingThread, CALLSTACK_SIG);
+    pthread_kill(callingThread, CALLSTACK_SIG);
 }
 
 static void _setup_callstack_signal_handler() {
@@ -356,8 +406,9 @@ static void _setup_callstack_signal_handler() {
 }
 
 __attribute__((noinline))
-int GetCallstack(ThreadId threadId, void **buffer, int size) {
-    if(threadId == 0 || threadId == (ThreadId)pthread_self()) {
+int GetCallstack(pthread_t threadId, void **buffer, int size) {
+    
+    if(threadId == 0 || threadId == pthread_self()) {
         int count = backtrace(buffer, size);
         static const int IgnoreTopFramesNum = 1; // remove this `GetCallstack` frame
         if(count > IgnoreTopFramesNum) {
@@ -367,8 +418,8 @@ int GetCallstack(ThreadId threadId, void **buffer, int size) {
         return count;
     }
     
-    Mutex::ScopedLock lock(callstackMutex.get());
-    callingThread = (ThreadId)pthread_self();
+    //Mutex::ScopedLock lock(callstackMutex.get());
+    callingThread = pthread_self();
     targetThread = threadId;
     threadCallstackBuffer = buffer;
     threadCallstackBufferSize = size;
@@ -376,24 +427,41 @@ int GetCallstack(ThreadId threadId, void **buffer, int size) {
     _setup_callstack_signal_handler();
     
     // call _callstack_signal_handler in target thread
-    if(pthread_kill((pthread_t)threadId, CALLSTACK_SIG) != 0)
-        // something failed ...
-        return 0;
+    int eee = pthread_kill(threadId, CALLSTACK_SIG);
     
+    if(eee != 0){
+        // something failed ...
+       
+         printf("pthread_kill error: %i ", eee);
+        switch (eee) {
+            case EINVAL:
+                printf("(EINVAL) sig is an invalid or unsupported signal number.\n");
+                break;
+                case ESRCH:
+                printf("(ESRCH) thread %lu is an invalid thread ID.\n", threadId);
+                break;
+            default:
+                break;
+        }
+       
+        return 0;
+    }
+
     {
         sigset_t mask;
         sigfillset(&mask);
         sigdelset(&mask, CALLSTACK_SIG);
         
         // wait for CALLSTACK_SIG on this thread
-        sigsuspend(&mask);
+        //sigsuspend(&mask);
     }
     
     threadCallstackBuffer = NULL;
     threadCallstackBufferSize = 0;
     return threadCallstackCount;
 }
-*/
+
+
 @end
 
 

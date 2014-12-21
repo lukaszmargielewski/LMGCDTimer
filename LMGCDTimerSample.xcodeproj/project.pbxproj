@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A18754B51A477636003EC05C /* Debug_GetPCFromUContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A18754B41A477636003EC05C /* Debug_GetPCFromUContext.cpp */; };
 		A1C7FC3C1A474ABC0098356E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC2D1A474ABC0098356E /* AppDelegate.m */; };
 		A1C7FC3F1A474ABC0098356E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1C7FC331A474ABC0098356E /* LaunchScreen.xib */; };
 		A1C7FC401A474ABC0098356E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1C7FC351A474ABC0098356E /* Main.storyboard */; };
@@ -15,10 +16,20 @@
 		A1C7FC441A474ABC0098356E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC3B1A474ABC0098356E /* ViewController.m */; };
 		A1C7FC4A1A474E720098356E /* LMGCDTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC471A474E720098356E /* LMGCDTimer.m */; };
 		A1C7FC4B1A474E720098356E /* LMGCDWatchdog.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC491A474E720098356E /* LMGCDWatchdog.m */; };
+		A1EA9E891A4793FB004E326A /* KSBacktrace.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E4F1A4793FB004E326A /* KSBacktrace.c */; };
+		A1EA9E8B1A4793FB004E326A /* KSDynamicLinker.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E541A4793FB004E326A /* KSDynamicLinker.c */; };
+		A1EA9E901A4793FB004E326A /* KSMach.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E5E1A4793FB004E326A /* KSMach.c */; };
+		A1EA9E911A4793FB004E326A /* KSMach_Arm.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E601A4793FB004E326A /* KSMach_Arm.c */; };
+		A1EA9E921A4793FB004E326A /* KSMach_Arm64.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E611A4793FB004E326A /* KSMach_Arm64.c */; };
+		A1EA9E931A4793FB004E326A /* KSMach_x86_32.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E621A4793FB004E326A /* KSMach_x86_32.c */; };
+		A1EA9E941A4793FB004E326A /* KSMach_x86_64.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E631A4793FB004E326A /* KSMach_x86_64.c */; };
+		A1EA9E951A4793FB004E326A /* KSObjC.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E651A4793FB004E326A /* KSObjC.c */; };
+		A1EA9E971A4793FB004E326A /* KSSignalInfo.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E6A1A4793FB004E326A /* KSSignalInfo.c */; };
+		A1EA9E981A4793FB004E326A /* KSString.c in Sources */ = {isa = PBXBuildFile; fileRef = A1EA9E6D1A4793FB004E326A /* KSString.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		9C3C4F4814957A5B468F0A04 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A18754B41A477636003EC05C /* Debug_GetPCFromUContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Debug_GetPCFromUContext.cpp; sourceTree = "<group>"; };
 		A1C7FBF31A4701AF0098356E /* LMGCDTimerSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LMGCDTimerSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1C7FC2C1A474ABC0098356E /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		A1C7FC2D1A474ABC0098356E /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -32,7 +43,26 @@
 		A1C7FC461A474E720098356E /* LMGCDTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMGCDTimer.h; sourceTree = "<group>"; };
 		A1C7FC471A474E720098356E /* LMGCDTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMGCDTimer.m; sourceTree = "<group>"; };
 		A1C7FC481A474E720098356E /* LMGCDWatchdog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMGCDWatchdog.h; sourceTree = "<group>"; };
-		A1C7FC491A474E720098356E /* LMGCDWatchdog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMGCDWatchdog.m; sourceTree = "<group>"; };
+		A1C7FC491A474E720098356E /* LMGCDWatchdog.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = LMGCDWatchdog.m; sourceTree = "<group>"; };
+		A1EA9E4E1A4793FB004E326A /* KSArchSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSArchSpecific.h; sourceTree = "<group>"; };
+		A1EA9E4F1A4793FB004E326A /* KSBacktrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSBacktrace.c; sourceTree = "<group>"; };
+		A1EA9E501A4793FB004E326A /* KSBacktrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSBacktrace.h; sourceTree = "<group>"; };
+		A1EA9E511A4793FB004E326A /* KSBacktrace_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSBacktrace_Private.h; sourceTree = "<group>"; };
+		A1EA9E541A4793FB004E326A /* KSDynamicLinker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSDynamicLinker.c; sourceTree = "<group>"; };
+		A1EA9E551A4793FB004E326A /* KSDynamicLinker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSDynamicLinker.h; sourceTree = "<group>"; };
+		A1EA9E5E1A4793FB004E326A /* KSMach.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach.c; sourceTree = "<group>"; };
+		A1EA9E5F1A4793FB004E326A /* KSMach.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMach.h; sourceTree = "<group>"; };
+		A1EA9E601A4793FB004E326A /* KSMach_Arm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_Arm.c; sourceTree = "<group>"; };
+		A1EA9E611A4793FB004E326A /* KSMach_Arm64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_Arm64.c; sourceTree = "<group>"; };
+		A1EA9E621A4793FB004E326A /* KSMach_x86_32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_32.c; sourceTree = "<group>"; };
+		A1EA9E631A4793FB004E326A /* KSMach_x86_64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_64.c; sourceTree = "<group>"; };
+		A1EA9E641A4793FB004E326A /* KSMachApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMachApple.h; sourceTree = "<group>"; };
+		A1EA9E651A4793FB004E326A /* KSObjC.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSObjC.c; sourceTree = "<group>"; };
+		A1EA9E661A4793FB004E326A /* KSObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSObjC.h; sourceTree = "<group>"; };
+		A1EA9E6A1A4793FB004E326A /* KSSignalInfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSSignalInfo.c; sourceTree = "<group>"; };
+		A1EA9E6B1A4793FB004E326A /* KSSignalInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSSignalInfo.h; sourceTree = "<group>"; };
+		A1EA9E6D1A4793FB004E326A /* KSString.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSString.c; sourceTree = "<group>"; };
+		A1EA9E6E1A4793FB004E326A /* KSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSString.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +79,7 @@
 		A1C7FBEA1A4701AF0098356E = {
 			isa = PBXGroup;
 			children = (
+				A1EA9D591A4793B6004E326A /* KSCrash */,
 				A1C7FC2B1A474ABC0098356E /* LMGCDTimer */,
 				A1C7FBF41A4701AF0098356E /* Products */,
 				AC836CD93D857B19055761E6 /* Frameworks */,
@@ -83,6 +114,7 @@
 		A1C7FC451A474E720098356E /* LMGCDTimer */ = {
 			isa = PBXGroup;
 			children = (
+				A18754B41A477636003EC05C /* Debug_GetPCFromUContext.cpp */,
 				A1C7FC461A474E720098356E /* LMGCDTimer.h */,
 				A1C7FC471A474E720098356E /* LMGCDTimer.m */,
 				A1C7FC481A474E720098356E /* LMGCDWatchdog.h */,
@@ -91,10 +123,52 @@
 			path = LMGCDTimer;
 			sourceTree = "<group>";
 		};
+		A1EA9D591A4793B6004E326A /* KSCrash */ = {
+			isa = PBXGroup;
+			children = (
+				A1EA9E241A4793FB004E326A /* Recording */,
+			);
+			name = KSCrash;
+			path = KSCrash/Source/KSCrash;
+			sourceTree = "<group>";
+		};
+		A1EA9E241A4793FB004E326A /* Recording */ = {
+			isa = PBXGroup;
+			children = (
+				A1EA9E4A1A4793FB004E326A /* Tools */,
+			);
+			path = Recording;
+			sourceTree = "<group>";
+		};
+		A1EA9E4A1A4793FB004E326A /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				A1EA9E4E1A4793FB004E326A /* KSArchSpecific.h */,
+				A1EA9E4F1A4793FB004E326A /* KSBacktrace.c */,
+				A1EA9E501A4793FB004E326A /* KSBacktrace.h */,
+				A1EA9E511A4793FB004E326A /* KSBacktrace_Private.h */,
+				A1EA9E541A4793FB004E326A /* KSDynamicLinker.c */,
+				A1EA9E551A4793FB004E326A /* KSDynamicLinker.h */,
+				A1EA9E5E1A4793FB004E326A /* KSMach.c */,
+				A1EA9E5F1A4793FB004E326A /* KSMach.h */,
+				A1EA9E601A4793FB004E326A /* KSMach_Arm.c */,
+				A1EA9E611A4793FB004E326A /* KSMach_Arm64.c */,
+				A1EA9E621A4793FB004E326A /* KSMach_x86_32.c */,
+				A1EA9E631A4793FB004E326A /* KSMach_x86_64.c */,
+				A1EA9E641A4793FB004E326A /* KSMachApple.h */,
+				A1EA9E651A4793FB004E326A /* KSObjC.c */,
+				A1EA9E661A4793FB004E326A /* KSObjC.h */,
+				A1EA9E6A1A4793FB004E326A /* KSSignalInfo.c */,
+				A1EA9E6B1A4793FB004E326A /* KSSignalInfo.h */,
+				A1EA9E6D1A4793FB004E326A /* KSString.c */,
+				A1EA9E6E1A4793FB004E326A /* KSString.h */,
+			);
+			path = Tools;
+			sourceTree = "<group>";
+		};
 		AC836CD93D857B19055761E6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				9C3C4F4814957A5B468F0A04 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -141,6 +215,18 @@
 			knownRegions = (
 				en,
 				Base,
+				da,
+				de,
+				English,
+				es,
+				fr,
+				it,
+				ja,
+				nl,
+				no,
+				sl,
+				sv,
+				tr,
 			);
 			mainGroup = A1C7FBEA1A4701AF0098356E;
 			productRefGroup = A1C7FBF41A4701AF0098356E /* Products */;
@@ -171,10 +257,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1C7FC3C1A474ABC0098356E /* AppDelegate.m in Sources */,
+				A1EA9E891A4793FB004E326A /* KSBacktrace.c in Sources */,
+				A18754B51A477636003EC05C /* Debug_GetPCFromUContext.cpp in Sources */,
 				A1C7FC431A474ABC0098356E /* main.m in Sources */,
 				A1C7FC441A474ABC0098356E /* ViewController.m in Sources */,
+				A1EA9E951A4793FB004E326A /* KSObjC.c in Sources */,
+				A1EA9E971A4793FB004E326A /* KSSignalInfo.c in Sources */,
 				A1C7FC4B1A474E720098356E /* LMGCDWatchdog.m in Sources */,
+				A1EA9E8B1A4793FB004E326A /* KSDynamicLinker.c in Sources */,
+				A1EA9E981A4793FB004E326A /* KSString.c in Sources */,
+				A1EA9E901A4793FB004E326A /* KSMach.c in Sources */,
 				A1C7FC4A1A474E720098356E /* LMGCDTimer.m in Sources */,
+				A1EA9E931A4793FB004E326A /* KSMach_x86_32.c in Sources */,
+				A1EA9E911A4793FB004E326A /* KSMach_Arm.c in Sources */,
+				A1EA9E921A4793FB004E326A /* KSMach_Arm64.c in Sources */,
+				A1EA9E941A4793FB004E326A /* KSMach_x86_64.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,8 +378,24 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Volumes/Data/Xcode_projects/MI/iPhone/Library/Frameworks,
+					"$(PROJECT_DIR)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/openlierox/util",
+					"$(PROJECT_DIR)/openlierox/include",
+				);
 				INFOPLIST_FILE = LMGCDTimer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/openlierox/tools/FontGenerator/build/msvc/lib",
+					"$(PROJECT_DIR)/openlierox/build/DevCpp/libs",
+				);
 				PRODUCT_NAME = LMGCDTimerSample;
 			};
 			name = Debug;
@@ -292,8 +405,24 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Volumes/Data/Xcode_projects/MI/iPhone/Library/Frameworks,
+					"$(PROJECT_DIR)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/openlierox/util",
+					"$(PROJECT_DIR)/openlierox/include",
+				);
 				INFOPLIST_FILE = LMGCDTimer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/openlierox/tools/FontGenerator/build/msvc/lib",
+					"$(PROJECT_DIR)/openlierox/build/DevCpp/libs",
+				);
 				PRODUCT_NAME = LMGCDTimerSample;
 			};
 			name = Release;
