@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "ATDispatcher.h"
+#import "LMGCDWatchdog.h"
 #import "DDLog.h"
 #import "DDASLLogger.h"
 #import "DDTTYLogger.h"
@@ -28,7 +28,7 @@
     [DDLog addLogger:[DDASLLogger sharedInstance]];
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
     
-    [[ATDispatcher singleton] startWatchDogTimerWithInterval:0.2 withDuration:0];
+    [[LMGCDWatchdog singleton] startWatchDogTimerWithInterval:0.2 withDuration:0];
     
     return YES;
 }
@@ -53,7 +53,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    [[ATDispatcher singleton] stopWatchDog];
+    [[LMGCDWatchdog singleton] stopWatchDog];
 }
 
 @end

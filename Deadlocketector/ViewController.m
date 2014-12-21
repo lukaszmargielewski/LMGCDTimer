@@ -7,8 +7,8 @@
 //
 
 #import "ViewController.h"
-#import "ATDispatcher.h"
-#import "ATTimer.h"
+#import "LMGCDWatchdog.h"
+#import "LMGCDTimer.h"
 
 @interface ViewController ()
 @property (nonatomic, strong) NSTimer *timer;
@@ -17,10 +17,10 @@
 
 @implementation ViewController{
 
-    ATTimer *timerLow;
-    ATTimer *timerDef;
-    ATTimer *timerHigh;
-    ATTimer *timerBack;
+    LMGCDTimer *timerLow;
+    LMGCDTimer *timerDef;
+    LMGCDTimer *timerHigh;
+    LMGCDTimer *timerBack;
 
     unsigned long long timer_low_count;
     unsigned long long timer_def_count;
@@ -47,7 +47,7 @@
     self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(update:) userInfo:nil repeats:YES];
     
     [timerLow invalidate];
-    timerLow = [ATTimer timerWithInterval:0.1 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0) block:^{
+    timerLow = [LMGCDTimer timerWithInterval:0.05 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0) block:^{
     
     
         timer_low_count++;
@@ -61,7 +61,7 @@
     }];
     
     [timerDef invalidate];
-    timerDef = [ATTimer timerWithInterval:0.1 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) block:^{
+    timerDef = [LMGCDTimer timerWithInterval:0.1 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) block:^{
         
         timer_def_count++;
         
@@ -74,7 +74,7 @@
     }];
     
     [timerBack invalidate];
-    timerBack = [ATTimer timerWithInterval:0.1 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0) block:^{
+    timerBack = [LMGCDTimer timerWithInterval:0.15 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0) block:^{
         
         timer_back_count++;
         
@@ -88,7 +88,7 @@
     }];
     
     [timerHigh invalidate];
-    timerHigh = [ATTimer timerWithInterval:0.1 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0) block:^{
+    timerHigh = [LMGCDTimer timerWithInterval:0.2 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0) block:^{
         
         timer_high_count++;
         
@@ -117,11 +117,11 @@
 
 -(IBAction)stopWatchdog:(id)sender{
 
-    [[ATDispatcher singleton] stopWatchDog];
+    [[LMGCDWatchdog singleton] stopWatchDog];
 }
 -(IBAction)startWatchdog:(id)sender{
 
-    [[ATDispatcher singleton] startWatchDogTimerWithInterval:0.1 withDuration:0];
+    [[LMGCDWatchdog singleton] startWatchDogTimerWithInterval:0.1 withDuration:0];
 }
 
 -(IBAction)scheduleDeadlock:(id)sender{

@@ -14,8 +14,8 @@
 		A1C7FC041A4701B00098356E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1C7FC031A4701B00098356E /* Images.xcassets */; };
 		A1C7FC071A4701B00098356E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1C7FC051A4701B00098356E /* LaunchScreen.xib */; };
 		A1C7FC131A4701B00098356E /* DeadlocketectorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC121A4701B00098356E /* DeadlocketectorTests.m */; };
-		A1C7FC1E1A4701D10098356E /* ATDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC1D1A4701D10098356E /* ATDispatcher.m */; };
-		A1C7FC211A4701E10098356E /* ATTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC201A4701E10098356E /* ATTimer.m */; };
+		A1C7FC291A47499A0098356E /* LMGCDWatchdog.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC261A47499A0098356E /* LMGCDWatchdog.m */; };
+		A1C7FC2A1A47499A0098356E /* LMGCDTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC281A47499A0098356E /* LMGCDTimer.m */; };
 		B290EC967A28183A36C8993B /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3C4F4814957A5B468F0A04 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -46,11 +46,11 @@
 		A1C7FC0C1A4701B00098356E /* DeadlockDetectorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeadlockDetectorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1C7FC111A4701B00098356E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1C7FC121A4701B00098356E /* DeadlocketectorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeadlocketectorTests.m; sourceTree = "<group>"; };
-		A1C7FC1C1A4701D10098356E /* ATDispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATDispatcher.h; path = "../../../../MI/iPhone/ios-ff/Classes/GPS_Activity_Tracking/Core/ATDispatcher.h"; sourceTree = "<group>"; };
-		A1C7FC1D1A4701D10098356E /* ATDispatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATDispatcher.m; path = "../../../../MI/iPhone/ios-ff/Classes/GPS_Activity_Tracking/Core/ATDispatcher.m"; sourceTree = "<group>"; };
-		A1C7FC1F1A4701E10098356E /* ATTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATTimer.h; path = "../../../../MI/iPhone/ios-ff/Classes/GPS_Activity_Tracking/Core/ATTimer.h"; sourceTree = "<group>"; };
-		A1C7FC201A4701E10098356E /* ATTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATTimer.m; path = "../../../../MI/iPhone/ios-ff/Classes/GPS_Activity_Tracking/Core/ATTimer.m"; sourceTree = "<group>"; };
 		A1C7FC221A4703000098356E /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		A1C7FC251A47499A0098356E /* LMGCDWatchdog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMGCDWatchdog.h; sourceTree = "<group>"; };
+		A1C7FC261A47499A0098356E /* LMGCDWatchdog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMGCDWatchdog.m; sourceTree = "<group>"; };
+		A1C7FC271A47499A0098356E /* LMGCDTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMGCDTimer.h; sourceTree = "<group>"; };
+		A1C7FC281A47499A0098356E /* LMGCDTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMGCDTimer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,10 +96,7 @@
 		A1C7FBF51A4701AF0098356E /* Deadlocketector */ = {
 			isa = PBXGroup;
 			children = (
-				A1C7FC1F1A4701E10098356E /* ATTimer.h */,
-				A1C7FC201A4701E10098356E /* ATTimer.m */,
-				A1C7FC1C1A4701D10098356E /* ATDispatcher.h */,
-				A1C7FC1D1A4701D10098356E /* ATDispatcher.m */,
+				A1C7FC241A4749910098356E /* ATTimer */,
 				A1C7FBFA1A4701B00098356E /* AppDelegate.h */,
 				A1C7FBFB1A4701B00098356E /* AppDelegate.m */,
 				A1C7FBFD1A4701B00098356E /* ViewController.h */,
@@ -138,6 +135,17 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		A1C7FC241A4749910098356E /* ATTimer */ = {
+			isa = PBXGroup;
+			children = (
+				A1C7FC251A47499A0098356E /* LMGCDWatchdog.h */,
+				A1C7FC261A47499A0098356E /* LMGCDWatchdog.m */,
+				A1C7FC271A47499A0098356E /* LMGCDTimer.h */,
+				A1C7FC281A47499A0098356E /* LMGCDTimer.m */,
+			);
+			path = ATTimer;
+			sourceTree = "<group>";
+		};
 		AC836CD93D857B19055761E6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -158,9 +166,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A1C7FBF21A4701AF0098356E /* DeadlockDetector */ = {
+		A1C7FBF21A4701AF0098356E /* LMGCDTimerSample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1C7FC161A4701B00098356E /* Build configuration list for PBXNativeTarget "DeadlockDetector" */;
+			buildConfigurationList = A1C7FC161A4701B00098356E /* Build configuration list for PBXNativeTarget "LMGCDTimerSample" */;
 			buildPhases = (
 				40651788EE3FB87DF815AFC4 /* Check Pods Manifest.lock */,
 				A1C7FBEF1A4701AF0098356E /* Sources */,
@@ -172,14 +180,14 @@
 			);
 			dependencies = (
 			);
-			name = DeadlockDetector;
+			name = LMGCDTimerSample;
 			productName = Deadlocketector;
 			productReference = A1C7FBF31A4701AF0098356E /* DeadlockDetector.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A1C7FC0B1A4701B00098356E /* DeadlockDetectorTests */ = {
+		A1C7FC0B1A4701B00098356E /* LMGCDTimerSampleTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1C7FC191A4701B00098356E /* Build configuration list for PBXNativeTarget "DeadlockDetectorTests" */;
+			buildConfigurationList = A1C7FC191A4701B00098356E /* Build configuration list for PBXNativeTarget "LMGCDTimerSampleTests" */;
 			buildPhases = (
 				A1C7FC081A4701B00098356E /* Sources */,
 				A1C7FC091A4701B00098356E /* Frameworks */,
@@ -190,7 +198,7 @@
 			dependencies = (
 				A1C7FC0E1A4701B00098356E /* PBXTargetDependency */,
 			);
-			name = DeadlockDetectorTests;
+			name = LMGCDTimerSampleTests;
 			productName = DeadlocketectorTests;
 			productReference = A1C7FC0C1A4701B00098356E /* DeadlockDetectorTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -214,7 +222,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A1C7FBEE1A4701AF0098356E /* Build configuration list for PBXProject "DeadlockDetector" */;
+			buildConfigurationList = A1C7FBEE1A4701AF0098356E /* Build configuration list for PBXProject "LMGCDTimerSample" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -227,8 +235,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A1C7FBF21A4701AF0098356E /* DeadlockDetector */,
-				A1C7FC0B1A4701B00098356E /* DeadlockDetectorTests */,
+				A1C7FBF21A4701AF0098356E /* LMGCDTimerSample */,
+				A1C7FC0B1A4701B00098356E /* LMGCDTimerSampleTests */,
 			);
 		};
 /* End PBXProject section */
@@ -292,10 +300,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1C7FBFF1A4701B00098356E /* ViewController.m in Sources */,
-				A1C7FC1E1A4701D10098356E /* ATDispatcher.m in Sources */,
+				A1C7FC291A47499A0098356E /* LMGCDWatchdog.m in Sources */,
 				A1C7FBFC1A4701B00098356E /* AppDelegate.m in Sources */,
 				A1C7FBF91A4701AF0098356E /* main.m in Sources */,
-				A1C7FC211A4701E10098356E /* ATTimer.m in Sources */,
+				A1C7FC2A1A47499A0098356E /* LMGCDTimer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,7 +320,7 @@
 /* Begin PBXTargetDependency section */
 		A1C7FC0E1A4701B00098356E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A1C7FBF21A4701AF0098356E /* DeadlockDetector */;
+			target = A1C7FBF21A4701AF0098356E /* LMGCDTimerSample */;
 			targetProxy = A1C7FC0D1A4701B00098356E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -421,7 +429,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Deadlocketector/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = DeadlockDetector;
+				PRODUCT_NAME = LMGCDTimerSample;
 			};
 			name = Debug;
 		};
@@ -433,7 +441,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Deadlocketector/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = DeadlockDetector;
+				PRODUCT_NAME = LMGCDTimerSample;
 			};
 			name = Release;
 		};
@@ -451,7 +459,7 @@
 				);
 				INFOPLIST_FILE = DeadlocketectorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = DeadlockDetectorTests;
+				PRODUCT_NAME = LMGCDTimerSampleTests;
 			};
 			name = Debug;
 		};
@@ -465,14 +473,14 @@
 				);
 				INFOPLIST_FILE = DeadlocketectorTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = DeadlockDetectorTests;
+				PRODUCT_NAME = LMGCDTimerSampleTests;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A1C7FBEE1A4701AF0098356E /* Build configuration list for PBXProject "DeadlockDetector" */ = {
+		A1C7FBEE1A4701AF0098356E /* Build configuration list for PBXProject "LMGCDTimerSample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1C7FC141A4701B00098356E /* Debug */,
@@ -481,7 +489,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1C7FC161A4701B00098356E /* Build configuration list for PBXNativeTarget "DeadlockDetector" */ = {
+		A1C7FC161A4701B00098356E /* Build configuration list for PBXNativeTarget "LMGCDTimerSample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1C7FC171A4701B00098356E /* Debug */,
@@ -490,7 +498,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1C7FC191A4701B00098356E /* Build configuration list for PBXNativeTarget "DeadlockDetectorTests" */ = {
+		A1C7FC191A4701B00098356E /* Build configuration list for PBXNativeTarget "LMGCDTimerSampleTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1C7FC1A1A4701B00098356E /* Debug */,
