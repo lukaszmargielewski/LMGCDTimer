@@ -308,7 +308,7 @@
 
     
     // 3. Get callstacks of all threads but not this:
-    uintptr_t backtrace[kMaxFamesSupported];
+    void * backtrace[kMaxFamesSupported];
     
 
     ///*
@@ -336,23 +336,25 @@
        //*/
 
         
-        int backtraceLength = ksbt_backtraceThread(thread, backtrace, sizeof(backtrace));
+        int backtraceLength = ksbt_backtraceThread(thread, (uintptr_t*)backtrace, sizeof(backtrace));
         
-        printf("\n%i. thread %i  backtrace %i frames: ", i + 1, thread, backtraceLength);
+        printf("\n%i. thread %i  backtrace %i frames: \n", i + 1, thread, backtraceLength);
         
-        ///*
-        //char** strs = backtrace_symbols(backtrace, backtraceLength);
+    
+        
+        char** strs = backtrace_symbols(backtrace, backtraceLength);
+        
         for(int a = 0; a < backtraceLength; ++a) {
             
-            printf("%lu ", backtrace[a]);
+            //printf("%lu ", backtrace[a]);
             
-            /*if(backtrace[a])
-                printf("%s \n", backtrace[a]);
+            if(backtrace[a])
+                printf("(%lu) %s \n",(uintptr_t*)backtrace[a], strs[a]);
             else
                 break;
-            */
+            
         }
-        //free(strs);
+        free(strs);
         
         
         ///*
