@@ -25,10 +25,17 @@
 #import "KSBacktrace.h"
 #import "KSBacktrace_Private.h"
 
+
+#include <mach/mach_time.h>
+
+
 #define kMaxFamesSupported 128
 #define kMaxThreadsSupported 30
 
+@interface LMGCDWatchdog()
 
+
+@end
 @implementation LMGCDWatchdog{
     
     
@@ -37,7 +44,11 @@
     unsigned numCPUs;
     NSLock *CPUUsageLock;
     
-    LMGCDTimer *_watchdog;
+    LMGCDTimer *_watchdogBackgoundTimer;
+    NSTimer     *_watchdogMainThreadTimer;
+    
+    uint64_t _mediaTimeWatchdogLastMainThreadPulse;
+    
     
     dispatch_queue_t _watchdog_queue;
     
@@ -155,56 +166,97 @@
 
 #pragma mark - Watchdog:
 
--(void)startWatchDogTimerWithInterval:(NSTimeInterval)interval withDuration:(NSTimeInterval)duration{
+-(void)startWatchDog{
 
-    __weak LMGCDWatchdog *weakSelf = self;
     
-    if (!_watchdog) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+
+        _mediaTimeWatchdogLastMainThreadPulse = mach_absolute_time();
         
+        [_watchdogMainThreadTimer invalidate];
+        _watchdogMainThreadTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(watchdorMainThreadPulse:) userInfo:nil repeats:YES];
         
-        if (_watchdog_queue == NULL) {
-            [self createWatchdogQueue];
+        __weak LMGCDWatchdog *weakSelf = self;
+        if (!_watchdogBackgoundTimer) {
+            
+            
+            if (_watchdog_queue == NULL) {
+                [self createWatchdogQueue];
+            }
+            
+            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:0.3 duration:0 leeway:0.3 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
+                
+                [weakSelf watchdogOperation];
+                
+            }];
+            
+            _watchdogBackgoundTimer.name = @"watchdog";
+        }else{
+            
+            _watchdogBackgoundTimer.interval = 0.3;
+            [_watchdogBackgoundTimer resume];
         }
-        
-        _watchdog = [LMGCDTimer timerWithInterval:interval duration:duration leeway:0 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
-            
-            [weakSelf watchdogOperation];
-            
-        }];
-        
-        _watchdog.name = @"watchdog";
-    }else{
-    
-        _watchdog.interval = interval;
-        [_watchdog resume];
-    }
 
+    
+    });
+    
+    
 
 }
 -(void)stopWatchDog{
 
-    [_watchdog pause];
+    dispatch_async(dispatch_get_main_queue(), ^{
+    
+        
+        [_watchdogBackgoundTimer pause];
+        [_watchdogMainThreadTimer invalidate];
+        
+    });
+    
+    
 }
 
 #pragma mark - Private:
+-(void)watchdorMainThreadPulse:(NSTimer *)timer{
 
+    _mediaTimeWatchdogLastMainThreadPulse = mach_absolute_time();
+    
+}
 -(void)watchdogOperation{
     
-    /*
-    double loadavg[3];
-    getloadavg(loadavg, 3);
-    DDLogCInfo(@"- %.2f", loadavg[0]);
-    return;
+    uint64_t tNow = mach_absolute_time();
+    uint64_t passed = tNow - _mediaTimeWatchdogLastMainThreadPulse;
+   
+    /* Get the timebase info */
+    static mach_timebase_info_data_t info;
+    if (info.denom == 0)mach_timebase_info(&info);
+    
+    
+    /* Do some code */
+    
+    
+    /* Convert to nanoseconds */
+    passed *= info.numer;
+    passed /= info.denom;
+    
+    float inSec = (double)passed / NSEC_PER_SEC;
+    
+    
+    if (inSec > 1) {
+        printf("longer main thread block in sec: %f\n", inSec);
+    
+        [self watchdogLongerMainThreadBlockDetected];
+    }
 
-    */
-    //DDLogCInfo(@"-- wd start --");
     
-    [self cpuInfo];
-    [self threadInfo];
-    
-    //DDLogCInfo(@"-- wd end --");
 }
 
+-(void)watchdogLongerMainThreadBlockDetected{
+    
+    [self threadsInfo];
+    [self cpuInfo];
+    
+}
 #pragma mark - Info methods:
 
 -(void)cpuInfo{
@@ -251,7 +303,7 @@
             inUseAll += inUse;
             totalAll += total;
             
-            //DDLogCInfo(@"cp: %u -> %.2f",i,inUse / total);
+            printf("\ncpu: %u -> %.2f",i,inUse / total);
             
         }
         
@@ -279,7 +331,7 @@
     
 }
 
--(void)threadInfo{
+-(void)threadsInfo{
 
     /* Threads */
     
@@ -304,8 +356,6 @@
     
         return;
     }
-    
-
     
     // 3. Get callstacks of all threads but not this:
     void * backtrace[kMaxFamesSupported];

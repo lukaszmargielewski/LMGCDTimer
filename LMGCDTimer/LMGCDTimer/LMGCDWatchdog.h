@@ -20,6 +20,7 @@
 #pragma mark - Watchdog:
 
 -(void)stopWatchDog;
--(void)startWatchDogTimerWithInterval:(NSTimeInterval)interval withDuration:(NSTimeInterval)duration;
+-(void)startWatchDog;
+
 
 @end

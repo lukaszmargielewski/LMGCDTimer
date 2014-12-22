@@ -39,6 +39,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    return;
     [self.timer invalidate];
     
     
@@ -121,7 +123,7 @@
 }
 -(IBAction)startWatchdog:(id)sender{
 
-    [[LMGCDWatchdog singleton] startWatchDogTimerWithInterval:0.5 withDuration:0];
+    [[LMGCDWatchdog singleton] startWatchDog];
 }
 
 -(IBAction)scheduleDeadlock:(id)sender{
