@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		80C22DCA1A482E8900001340 /* KSBacktrace.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DBC1A482E8900001340 /* KSBacktrace.c */; };
-		80C22DCB1A482E8900001340 /* KSDynamicLinker.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DBF1A482E8900001340 /* KSDynamicLinker.c */; };
-		80C22DCC1A482E8900001340 /* KSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DC21A482E8900001340 /* KSLogger.m */; };
-		80C22DCD1A482E8900001340 /* KSMach.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DC31A482E8900001340 /* KSMach.c */; };
-		80C22DCE1A482E8900001340 /* KSMach_Arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DC51A482E8900001340 /* KSMach_Arm.c */; };
-		80C22DCF1A482E8900001340 /* KSMach_Arm64.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DC61A482E8900001340 /* KSMach_Arm64.c */; };
-		80C22DD01A482E8900001340 /* KSMach_x86_32.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DC71A482E8900001340 /* KSMach_x86_32.c */; };
-		80C22DD11A482E8900001340 /* KSMach_x86_64.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DC81A482E8900001340 /* KSMach_x86_64.c */; };
+		80C22DE21A48376100001340 /* KSBacktrace.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DD41A48376100001340 /* KSBacktrace.c */; };
+		80C22DE31A48376100001340 /* KSDynamicLinker.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DD71A48376100001340 /* KSDynamicLinker.c */; };
+		80C22DE41A48376100001340 /* KSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDA1A48376100001340 /* KSLogger.m */; };
+		80C22DE51A48376100001340 /* KSMach.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDB1A48376100001340 /* KSMach.c */; };
+		80C22DE61A48376100001340 /* KSMach_Arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDD1A48376100001340 /* KSMach_Arm.c */; };
+		80C22DE71A48376100001340 /* KSMach_Arm64.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDE1A48376100001340 /* KSMach_Arm64.c */; };
+		80C22DE81A48376100001340 /* KSMach_x86_32.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDF1A48376100001340 /* KSMach_x86_32.c */; };
+		80C22DE91A48376100001340 /* KSMach_x86_64.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DE01A48376100001340 /* KSMach_x86_64.c */; };
 		A1C7FC3C1A474ABC0098356E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC2D1A474ABC0098356E /* AppDelegate.m */; };
 		A1C7FC3F1A474ABC0098356E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1C7FC331A474ABC0098356E /* LaunchScreen.xib */; };
 		A1C7FC401A474ABC0098356E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1C7FC351A474ABC0098356E /* Main.storyboard */; };
@@ -26,21 +26,21 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		80C22DBB1A482E8900001340 /* KSArchSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSArchSpecific.h; sourceTree = "<group>"; };
-		80C22DBC1A482E8900001340 /* KSBacktrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSBacktrace.c; sourceTree = "<group>"; };
-		80C22DBD1A482E8900001340 /* KSBacktrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSBacktrace.h; sourceTree = "<group>"; };
-		80C22DBE1A482E8900001340 /* KSBacktrace_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSBacktrace_Private.h; sourceTree = "<group>"; };
-		80C22DBF1A482E8900001340 /* KSDynamicLinker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSDynamicLinker.c; sourceTree = "<group>"; };
-		80C22DC01A482E8900001340 /* KSDynamicLinker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSDynamicLinker.h; sourceTree = "<group>"; };
-		80C22DC11A482E8900001340 /* KSLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSLogger.h; sourceTree = "<group>"; };
-		80C22DC21A482E8900001340 /* KSLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSLogger.m; sourceTree = "<group>"; };
-		80C22DC31A482E8900001340 /* KSMach.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach.c; sourceTree = "<group>"; };
-		80C22DC41A482E8900001340 /* KSMach.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMach.h; sourceTree = "<group>"; };
-		80C22DC51A482E8900001340 /* KSMach_Arm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_Arm.c; sourceTree = "<group>"; };
-		80C22DC61A482E8900001340 /* KSMach_Arm64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_Arm64.c; sourceTree = "<group>"; };
-		80C22DC71A482E8900001340 /* KSMach_x86_32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_32.c; sourceTree = "<group>"; };
-		80C22DC81A482E8900001340 /* KSMach_x86_64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_64.c; sourceTree = "<group>"; };
-		80C22DC91A482E8900001340 /* KSMachApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMachApple.h; sourceTree = "<group>"; };
+		80C22DD31A48376100001340 /* KSArchSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSArchSpecific.h; sourceTree = "<group>"; };
+		80C22DD41A48376100001340 /* KSBacktrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSBacktrace.c; sourceTree = "<group>"; };
+		80C22DD51A48376100001340 /* KSBacktrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSBacktrace.h; sourceTree = "<group>"; };
+		80C22DD61A48376100001340 /* KSBacktrace_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSBacktrace_Private.h; sourceTree = "<group>"; };
+		80C22DD71A48376100001340 /* KSDynamicLinker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSDynamicLinker.c; sourceTree = "<group>"; };
+		80C22DD81A48376100001340 /* KSDynamicLinker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSDynamicLinker.h; sourceTree = "<group>"; };
+		80C22DD91A48376100001340 /* KSLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSLogger.h; sourceTree = "<group>"; };
+		80C22DDA1A48376100001340 /* KSLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSLogger.m; sourceTree = "<group>"; };
+		80C22DDB1A48376100001340 /* KSMach.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach.c; sourceTree = "<group>"; };
+		80C22DDC1A48376100001340 /* KSMach.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMach.h; sourceTree = "<group>"; };
+		80C22DDD1A48376100001340 /* KSMach_Arm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_Arm.c; sourceTree = "<group>"; };
+		80C22DDE1A48376100001340 /* KSMach_Arm64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_Arm64.c; sourceTree = "<group>"; };
+		80C22DDF1A48376100001340 /* KSMach_x86_32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_32.c; sourceTree = "<group>"; };
+		80C22DE01A48376100001340 /* KSMach_x86_64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_64.c; sourceTree = "<group>"; };
+		80C22DE11A48376100001340 /* KSMachApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMachApple.h; sourceTree = "<group>"; };
 		A1C7FBF31A4701AF0098356E /* LMGCDTimerSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LMGCDTimerSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1C7FC2C1A474ABC0098356E /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		A1C7FC2D1A474ABC0098356E /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -68,24 +68,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		80C22DBA1A482E8900001340 /* Backtrace */ = {
+		80C22DD21A48376100001340 /* Backtrace */ = {
 			isa = PBXGroup;
 			children = (
-				80C22DBB1A482E8900001340 /* KSArchSpecific.h */,
-				80C22DBC1A482E8900001340 /* KSBacktrace.c */,
-				80C22DBD1A482E8900001340 /* KSBacktrace.h */,
-				80C22DBE1A482E8900001340 /* KSBacktrace_Private.h */,
-				80C22DBF1A482E8900001340 /* KSDynamicLinker.c */,
-				80C22DC01A482E8900001340 /* KSDynamicLinker.h */,
-				80C22DC11A482E8900001340 /* KSLogger.h */,
-				80C22DC21A482E8900001340 /* KSLogger.m */,
-				80C22DC31A482E8900001340 /* KSMach.c */,
-				80C22DC41A482E8900001340 /* KSMach.h */,
-				80C22DC51A482E8900001340 /* KSMach_Arm.c */,
-				80C22DC61A482E8900001340 /* KSMach_Arm64.c */,
-				80C22DC71A482E8900001340 /* KSMach_x86_32.c */,
-				80C22DC81A482E8900001340 /* KSMach_x86_64.c */,
-				80C22DC91A482E8900001340 /* KSMachApple.h */,
+				80C22DD31A48376100001340 /* KSArchSpecific.h */,
+				80C22DD41A48376100001340 /* KSBacktrace.c */,
+				80C22DD51A48376100001340 /* KSBacktrace.h */,
+				80C22DD61A48376100001340 /* KSBacktrace_Private.h */,
+				80C22DD71A48376100001340 /* KSDynamicLinker.c */,
+				80C22DD81A48376100001340 /* KSDynamicLinker.h */,
+				80C22DD91A48376100001340 /* KSLogger.h */,
+				80C22DDA1A48376100001340 /* KSLogger.m */,
+				80C22DDB1A48376100001340 /* KSMach.c */,
+				80C22DDC1A48376100001340 /* KSMach.h */,
+				80C22DDD1A48376100001340 /* KSMach_Arm.c */,
+				80C22DDE1A48376100001340 /* KSMach_Arm64.c */,
+				80C22DDF1A48376100001340 /* KSMach_x86_32.c */,
+				80C22DE01A48376100001340 /* KSMach_x86_64.c */,
+				80C22DE11A48376100001340 /* KSMachApple.h */,
 			);
 			path = Backtrace;
 			sourceTree = "<group>";
@@ -93,7 +93,6 @@
 		A1C7FBEA1A4701AF0098356E = {
 			isa = PBXGroup;
 			children = (
-				80C22DBA1A482E8900001340 /* Backtrace */,
 				A1C7FC2B1A474ABC0098356E /* LMGCDTimer */,
 				A1C7FBF41A4701AF0098356E /* Products */,
 				AC836CD93D857B19055761E6 /* Frameworks */,
@@ -128,6 +127,7 @@
 		A1C7FC451A474E720098356E /* LMGCDTimer */ = {
 			isa = PBXGroup;
 			children = (
+				80C22DD21A48376100001340 /* Backtrace */,
 				A1C7FC461A474E720098356E /* LMGCDTimer.h */,
 				A1C7FC471A474E720098356E /* LMGCDTimer.m */,
 				A1C7FC481A474E720098356E /* LMGCDWatchdog.h */,
@@ -227,17 +227,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1C7FC3C1A474ABC0098356E /* AppDelegate.m in Sources */,
-				80C22DCE1A482E8900001340 /* KSMach_Arm.c in Sources */,
+				80C22DE61A48376100001340 /* KSMach_Arm.c in Sources */,
 				A1C7FC431A474ABC0098356E /* main.m in Sources */,
 				A1C7FC441A474ABC0098356E /* ViewController.m in Sources */,
-				80C22DCC1A482E8900001340 /* KSLogger.m in Sources */,
-				80C22DCD1A482E8900001340 /* KSMach.c in Sources */,
-				80C22DD11A482E8900001340 /* KSMach_x86_64.c in Sources */,
-				80C22DCB1A482E8900001340 /* KSDynamicLinker.c in Sources */,
+				80C22DE41A48376100001340 /* KSLogger.m in Sources */,
+				80C22DE51A48376100001340 /* KSMach.c in Sources */,
+				80C22DE91A48376100001340 /* KSMach_x86_64.c in Sources */,
+				80C22DE31A48376100001340 /* KSDynamicLinker.c in Sources */,
 				A1C7FC4B1A474E720098356E /* LMGCDWatchdog.m in Sources */,
-				80C22DD01A482E8900001340 /* KSMach_x86_32.c in Sources */,
-				80C22DCA1A482E8900001340 /* KSBacktrace.c in Sources */,
-				80C22DCF1A482E8900001340 /* KSMach_Arm64.c in Sources */,
+				80C22DE81A48376100001340 /* KSMach_x86_32.c in Sources */,
+				80C22DE21A48376100001340 /* KSBacktrace.c in Sources */,
+				80C22DE71A48376100001340 /* KSMach_Arm64.c in Sources */,
 				A1C7FC4A1A474E720098356E /* LMGCDTimer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
