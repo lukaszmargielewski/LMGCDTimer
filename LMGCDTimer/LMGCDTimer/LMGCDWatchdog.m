@@ -25,20 +25,8 @@
 #import "KSBacktrace.h"
 #import "KSBacktrace_Private.h"
 
-typedef struct KSFrameEntry
-{
-    /** The previous frame in the list. */
-    const struct KSFrameEntry* const previous;
-    
-    /** The instruction address. */
-    const uintptr_t return_address;
-} KSFrameEntry;
-
-#ifdef __arm64__
-#define STRUCT_MCONTEXT_L _STRUCT_MCONTEXT64
-#else
-#define STRUCT_MCONTEXT_L _STRUCT_MCONTEXT
-#endif
+#define kMaxFamesSupported 128
+#define kMaxThreadsSupported 30
 
 
 @implementation LMGCDWatchdog{
@@ -290,13 +278,14 @@ typedef struct KSFrameEntry
     }
     
 }
+
 -(void)threadInfo{
 
     /* Threads */
     
     
     const task_t    this_task = mach_task_self();
-    const thread_t  this_thread = pl_mach_thread_self();
+    const thread_t  this_thread = mach_thread_self();
     
     kern_return_t kr;
     
@@ -319,12 +308,11 @@ typedef struct KSFrameEntry
 
     
     // 3. Get callstacks of all threads but not this:
-    //uintptr_t* const
-    uintptr_t backtrace[128];
+    uintptr_t backtrace[kMaxFamesSupported];
     
 
     ///*
-    printf("--- %i threads (current: %i): ", thread_count, this_thread);
+    printf("\n--- %i threads (current: %i): ", thread_count, this_thread);
     
     
     for (mach_msg_type_number_t i = 0; i < thread_count; i++) {
@@ -332,7 +320,7 @@ typedef struct KSFrameEntry
         thread_t thread = threads[i];
         
         if (this_thread == thread) {
-            printf("%i. thread: self - skipping self\n", i + 1);
+            printf("\n%i. thread: %i self - current, skipping", i + 1, thread);
             continue;
         }
         
@@ -377,42 +365,17 @@ typedef struct KSFrameEntry
         
         
         //*/
-        
+        mach_port_deallocate(this_task, thread);
     }
     
     
-    
-    
+    mach_port_deallocate(this_task, this_thread);
     // 4. Deallocation:
-    
-    /*for(mach_msg_type_number_t i = 0; i < thread_count; i++)
-    {
-        thread_t thread = threads[i];
-        if (this_thread == thread) {
-            printf("%i. thread: self - skipping self\n", i + 1);
-            continue;
-        }
-        mach_port_deallocate(this_task, threads[i]);
-    }*/
-    
+
     vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
 
 }
 
-
-/**
- * Return a borrowed reference to the current thread's mach port. This differs
- * from mach_thread_self(), which acquires a new reference to the backing thread.
- *
- * @note The mach_thread_self() reference counting semantics differ from mach_task_self();
- * mach_task_self() returns a borrowed reference, and will not leak -- a wrapper
- * function such as this is not required for mach_task_self().
- */
-thread_t pl_mach_thread_self (void) {
-    thread_t result = mach_thread_self();
-    mach_port_deallocate(mach_task_self(), result);
-    return result;
-}
 
 @end
 

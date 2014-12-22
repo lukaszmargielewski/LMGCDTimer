@@ -20,7 +20,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    [[LMGCDWatchdog singleton] startWatchDogTimerWithInterval:0.05 withDuration:0];
+    [[LMGCDWatchdog singleton] startWatchDogTimerWithInterval:0.5 withDuration:0];
     
     return YES;
 }
