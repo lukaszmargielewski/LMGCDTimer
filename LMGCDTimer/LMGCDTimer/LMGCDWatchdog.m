@@ -252,15 +252,15 @@
 
 -(void)watchdogLongerMainThreadBlockDetected{
     
+    _threadsStackTrace = [self threadsInfo];
     [self cpuInfo];
-   _threadsStackTrace = [self threadsInfo];
-    
+   
     [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self];
     
 }
 #pragma mark - Info methods:
 
--(NSString *)cpuInfo{
+-(void)cpuInfo{
     
     natural_t numCPUsU = 0U;
     kern_return_t err = host_processor_info(mach_host_self(), PROCESSOR_CPU_LOAD_INFO, &numCPUsU, &cpuInfo, &numCpuInfo);
@@ -274,8 +274,7 @@
         float ticks_syst;
         float ticks_nice;
         float ticks_idle;
-        
-        NSMutableString *sss = [[NSMutableString alloc] initWithCapacity:200];
+
         
         for(unsigned i = 0U; i < numCPUs; ++i) {
             
@@ -329,6 +328,8 @@
     } else {
         //DDLogCInfo(@"cpu sample error!");
     }
+    
+
     
 }
 
