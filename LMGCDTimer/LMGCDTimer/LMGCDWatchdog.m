@@ -243,7 +243,6 @@
     
     
     if (inSec > 1) {
-        printf("longer main thread block in sec: %f\n", inSec);
     
         [self watchdogLongerMainThreadBlockDetected];
     }
@@ -373,20 +372,16 @@
         thread_t thread = threads[i];
         
         if (this_thread == thread) {
-            printf("\n%i. thread: %i self - current, skipping", i + 1, thread);
+            //printf("\n%i. thread: %i self - current, skipping", i + 1, thread);
             continue;
         }
         
-        ///*
         if((kr = thread_suspend(thread)) != KERN_SUCCESS)
         {
-            
-            printf("thread_suspend (%08x): %s", thread, mach_error_string(kr));
             continue;
             // Don't treat this as a fatal error.
         }
-        
-       //*/
+
 
         
         int backtraceLength = ksbt_backtraceThread(thread, (uintptr_t*)backtrace, sizeof(backtrace));
@@ -409,17 +404,9 @@
         }
         free(strs);
         
+    
+        if((kr = thread_resume(thread)) != KERN_SUCCESS){}
         
-        ///*
-        if((kr = thread_resume(thread)) != KERN_SUCCESS)
-        {
-            
-            printf("thread_resume (%08x): %s", thread, mach_error_string(kr));
-            // Don't treat this as a fatal error.
-        }
-        
-        
-        //*/
         mach_port_deallocate(this_task, thread);
     }
     
