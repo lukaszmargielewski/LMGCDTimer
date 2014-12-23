@@ -253,13 +253,15 @@
 
 -(void)watchdogLongerMainThreadBlockDetected{
     
-    [self threadsInfo];
     [self cpuInfo];
+   _threadsStackTrace = [self threadsInfo];
+    
+    [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self];
     
 }
 #pragma mark - Info methods:
 
--(void)cpuInfo{
+-(NSString *)cpuInfo{
     
     natural_t numCPUsU = 0U;
     kern_return_t err = host_processor_info(mach_host_self(), PROCESSOR_CPU_LOAD_INFO, &numCPUsU, &cpuInfo, &numCpuInfo);
@@ -273,6 +275,8 @@
         float ticks_syst;
         float ticks_nice;
         float ticks_idle;
+        
+        NSMutableString *sss = [[NSMutableString alloc] initWithCapacity:200];
         
         for(unsigned i = 0U; i < numCPUs; ++i) {
             
@@ -303,11 +307,9 @@
             inUseAll += inUse;
             totalAll += total;
             
-            printf("\ncpu: %u -> %.2f",i,inUse / total);
-            
         }
         
-        
+        _cpuUsagePercent = (inUseAll / totalAll) * 100.0;
         
         [CPUUsageLock unlock];
         
@@ -331,10 +333,11 @@
     
 }
 
--(void)threadsInfo{
+-(NSString *)threadsInfo{
 
     /* Threads */
     
+    NSMutableString *sss = [[NSMutableString alloc] initWithCapacity:10000];
     
     const task_t    this_task = mach_task_self();
     const thread_t  this_thread = mach_thread_self();
@@ -354,7 +357,7 @@
         thread_count = 0;
         printf("error getting threads: %s", mach_error_string(kr));
     
-        return;
+        return nil;
     }
     
     // 3. Get callstacks of all threads but not this:
@@ -362,7 +365,7 @@
     
 
     ///*
-    printf("\n--- %i threads (current: %i): ", thread_count, this_thread);
+    [sss appendFormat:@"\n--- %i threads (current: %i): ", thread_count, this_thread];
     
     
     for (mach_msg_type_number_t i = 0; i < thread_count; i++) {
@@ -388,7 +391,7 @@
         
         int backtraceLength = ksbt_backtraceThread(thread, (uintptr_t*)backtrace, sizeof(backtrace));
         
-        printf("\n%i. thread %i  backtrace %i frames: \n", i + 1, thread, backtraceLength);
+        [sss appendFormat:@"\n%i. thread %i  backtrace %i frames: \n", i + 1, thread, backtraceLength];
         
     
         
@@ -399,7 +402,7 @@
             //printf("%lu ", backtrace[a]);
             
             if(backtrace[a])
-                printf("(%lu) %s \n",(uintptr_t*)backtrace[a], strs[a]);
+                [sss appendFormat:@"%s \n",strs[a]];
             else
                 break;
             
@@ -425,6 +428,8 @@
     // 4. Deallocation:
 
     vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
+    
+    return sss;
 
 }
 

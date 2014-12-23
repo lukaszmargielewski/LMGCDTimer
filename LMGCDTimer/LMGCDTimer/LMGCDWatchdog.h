@@ -8,12 +8,21 @@
 
 #import <Foundation/Foundation.h>
 
+@class LMGCDWatchdog;
+@protocol LMGCDWatchdogDelegate <NSObject>
 
+
+-(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog ;
+
+@end
 
 @interface LMGCDWatchdog : NSObject
 
 @property (nonatomic, readonly) dispatch_queue_t queue;
 @property (nonatomic) float cpuUsagePercent;
+@property (nonatomic, strong) NSString *threadsStackTrace;
+@property (nonatomic, assign) id<LMGCDWatchdogDelegate>delegate;
+
 
 +(instancetype)singleton;
 
