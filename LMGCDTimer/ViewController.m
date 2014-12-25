@@ -40,7 +40,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    return;
+    //return;
     [self.timer invalidate];
     
     
@@ -128,7 +128,7 @@
 
 -(IBAction)scheduleDeadlock:(id)sender{
 
-    for (long long i = 0; i < 10000000; i++) {
+    for (long long i = 0; i < 1000000; i++) {
         
         [self.view setNeedsLayout];
     }

@@ -49,6 +49,9 @@
     
     uint64_t _mediaTimeWatchdogLastMainThreadPulse;
     
+    BOOL _deadlock;
+    uint64_t _deadlock_time_start;
+    uint64_t _deadlock_time_end;
     
     dispatch_queue_t _watchdog_queue;
     
@@ -184,7 +187,7 @@
                 [self createWatchdogQueue];
             }
             
-            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:0.3 duration:0 leeway:0.3 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
+            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:0.1 duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
                 
                 [weakSelf watchdogOperation];
                 
@@ -220,7 +223,7 @@
 -(void)watchdorMainThreadPulse:(NSTimer *)timer{
 
     _mediaTimeWatchdogLastMainThreadPulse = mach_absolute_time();
-    
+    //printf(".");
 }
 -(void)watchdogOperation{
     
@@ -231,20 +234,32 @@
     static mach_timebase_info_data_t info;
     if (info.denom == 0)mach_timebase_info(&info);
     
-    
-    /* Do some code */
-    
-    
     /* Convert to nanoseconds */
     passed *= info.numer;
     passed /= info.denom;
     
-    float inSec = (double)passed / NSEC_PER_SEC;
     
+    if (passed > NSEC_PER_SEC) {
     
-    if (inSec > 1) {
+        if (!_deadlock) {
+            _deadlock = YES;
+            _deadlock_time_start = tNow;
+            printf("\n");
+            [self watchdogLongerMainThreadBlockDetected];
+        }
+        
+    }else{
     
-        [self watchdogLongerMainThreadBlockDetected];
+        if (_deadlock) {
+            _deadlock_time_end = tNow;
+            _deadlock = NO;
+            uint64_t _deadlock_duration = _deadlock_time_end - _deadlock_time_start;
+            
+            _deadlock_duration *= info.numer;
+            _deadlock_duration /= info.denom;
+            printf("\ndeadlock time approx: %.3f sec\n", (double)_deadlock_duration /(double)NSEC_PER_SEC);
+        }
+        
     }
 
     
@@ -252,11 +267,12 @@
 
 -(void)watchdogLongerMainThreadBlockDetected{
     
+    printf("!");
     _threadsStackTrace = [self threadsInfo];
     [self cpuInfo];
    
     [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self];
-    
+
 }
 #pragma mark - Info methods:
 
