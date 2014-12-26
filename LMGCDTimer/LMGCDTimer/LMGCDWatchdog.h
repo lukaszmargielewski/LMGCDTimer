@@ -9,10 +9,11 @@
 #import <Foundation/Foundation.h>
 
 @class LMGCDWatchdog;
+
 @protocol LMGCDWatchdogDelegate <NSObject>
 
-
--(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog ;
+-(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog;
+-(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration;
 
 @end
 
@@ -21,8 +22,8 @@
 @property (nonatomic, readonly) dispatch_queue_t queue;
 @property (nonatomic) float cpuUsagePercent;
 @property (nonatomic, strong) NSString *threadsStackTrace;
-@property (nonatomic, assign) id<LMGCDWatchdogDelegate>delegate;
 
+@property (nonatomic, assign) id<LMGCDWatchdogDelegate>delegate;
 
 +(instancetype)singleton;
 

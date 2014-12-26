@@ -245,7 +245,12 @@
             _deadlock = YES;
             _deadlock_time_start = tNow;
             printf("\n");
-            [self watchdogLongerMainThreadBlockDetected];
+            
+            _threadsStackTrace = [self threadsInfo];
+            [self cpuInfo];
+            
+            [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self];
+            
         }
         
     }else{
@@ -258,22 +263,15 @@
             _deadlock_duration *= info.numer;
             _deadlock_duration /= info.denom;
             printf("\ndeadlock time approx: %.3f sec\n", (double)_deadlock_duration /(double)NSEC_PER_SEC);
-        }
-        
+            _threadsStackTrace = [self threadsInfo];
+            [self cpuInfo];
+
+            [_delegate LMGCDWatchdog:self deadlockDidFinishWithduration:_deadlock_duration];
+        }   
     }
-
-    
 }
 
--(void)watchdogLongerMainThreadBlockDetected{
-    
-    printf("!");
-    _threadsStackTrace = [self threadsInfo];
-    [self cpuInfo];
-   
-    [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self];
 
-}
 #pragma mark - Info methods:
 
 -(void)cpuInfo{
