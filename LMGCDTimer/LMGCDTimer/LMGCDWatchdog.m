@@ -45,15 +45,12 @@
     NSLock *CPUUsageLock;
     
     LMGCDTimer *_watchdogBackgoundTimer;
-    NSTimer     *_watchdogMainThreadTimer;
     
-    uint64_t _mediaTimeWatchdogLastMainThreadPulse;
-    
-    BOOL _deadlock;
-    uint64_t _deadlock_time_start;
-    uint64_t _deadlock_time_end;
+    uint64_t _time_start;
     
     dispatch_queue_t _watchdog_queue;
+    BOOL _waiting_in_main_queue;
+    BOOL _deadlock;
     
 }
 @synthesize queue = _queue;
@@ -172,13 +169,6 @@
 -(void)startWatchDog{
 
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-
-        _mediaTimeWatchdogLastMainThreadPulse = mach_absolute_time();
-        
-        [_watchdogMainThreadTimer invalidate];
-        _watchdogMainThreadTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(watchdorMainThreadPulse:) userInfo:nil repeats:YES];
-        
         __weak LMGCDWatchdog *weakSelf = self;
         if (!_watchdogBackgoundTimer) {
             
@@ -187,7 +177,7 @@
                 [self createWatchdogQueue];
             }
             
-            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:0.1 duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
+            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:0.5 duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
                 
                 [weakSelf watchdogOperation];
                 
@@ -199,76 +189,65 @@
             _watchdogBackgoundTimer.interval = 0.3;
             [_watchdogBackgoundTimer resume];
         }
-
-    
-    });
-    
-    
-
 }
 -(void)stopWatchDog{
-
-    dispatch_async(dispatch_get_main_queue(), ^{
     
-        
         [_watchdogBackgoundTimer pause];
-        [_watchdogMainThreadTimer invalidate];
-        
-    });
-    
-    
 }
 
 #pragma mark - Private:
--(void)watchdorMainThreadPulse:(NSTimer *)timer{
 
-    _mediaTimeWatchdogLastMainThreadPulse = mach_absolute_time();
-    //printf(".");
-}
 -(void)watchdogOperation{
     
-    uint64_t tNow = mach_absolute_time();
-    uint64_t passed = tNow - _mediaTimeWatchdogLastMainThreadPulse;
-   
-    /* Get the timebase info */
-    static mach_timebase_info_data_t info;
-    if (info.denom == 0)mach_timebase_info(&info);
     
-    /* Convert to nanoseconds */
-    passed *= info.numer;
-    passed /= info.denom;
+    if(!_waiting_in_main_queue){
     
-    
-    if (passed > NSEC_PER_SEC) {
-    
-        if (!_deadlock) {
-            _deadlock = YES;
-            _deadlock_time_start = tNow;
-            printf("\n");
-            
-            _threadsStackTrace = [self threadsInfo];
-            [self cpuInfo];
-            
-            [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self];
-            
-        }
+        _waiting_in_main_queue = YES;
+        _time_start = mach_absolute_time();
         
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            _waiting_in_main_queue = NO;
+            
+            if (_deadlock) {
+                
+                self.threadsStackTrace = [self threadsInfo];
+                [self cpuInfo];
+                //printf(" - !>");
+                _deadlock = NO;
+                uint64_t tNow = mach_absolute_time();
+                uint64_t elapsed = tNow - _time_start;
+                
+                static mach_timebase_info_data_t info;
+                
+                if (info.denom == 0) {
+                    (void) mach_timebase_info(&info);
+                }
+                
+                uint64_t nanos = elapsed * info.numer / info.denom;
+                double seconds = (double)nanos / NSEC_PER_SEC;
+                
+                
+                [_delegate LMGCDWatchdog:self deadlockDidFinishWithduration:seconds];
+            }
+        });
+
     }else{
     
-        if (_deadlock) {
-            _deadlock_time_end = tNow;
-            _deadlock = NO;
-            uint64_t _deadlock_duration = _deadlock_time_end - _deadlock_time_start;
-            
-            _deadlock_duration *= info.numer;
-            _deadlock_duration /= info.denom;
-            printf("\ndeadlock time approx: %.3f sec\n", (double)_deadlock_duration /(double)NSEC_PER_SEC);
-            _threadsStackTrace = [self threadsInfo];
+        if (!_deadlock) {
+        
+            self.threadsStackTrace = [self threadsInfo];
             [self cpuInfo];
-
-            [_delegate LMGCDWatchdog:self deadlockDidFinishWithduration:_deadlock_duration];
-        }   
+            _deadlock = YES;
+            [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self];
+            
+            //printf("<!");
+        }
+        
+        
+    
     }
+    
 }
 
 

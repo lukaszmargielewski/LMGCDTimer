@@ -10,7 +10,7 @@
 #import "LMGCDWatchdog.h"
 #import "LMGCDTimer.h"
 
-@interface ViewController ()
+@interface ViewController ()<LMGCDWatchdogDelegate>
 @property (nonatomic, strong) NSTimer *timer;
 
 @end
@@ -39,7 +39,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    
+    [LMGCDWatchdog singleton].delegate = self;
     //return;
     [self.timer invalidate];
     
@@ -122,16 +122,29 @@
     [[LMGCDWatchdog singleton] stopWatchDog];
 }
 -(IBAction)startWatchdog:(id)sender{
-
+    
     [[LMGCDWatchdog singleton] startWatchDog];
 }
 
 -(IBAction)scheduleDeadlock:(id)sender{
 
-    for (long long i = 0; i < 1000000; i++) {
+    for (long long i = 0; i < 10000000; i++) {
         
         [self.view setNeedsLayout];
     }
     
 }
+
+#pragma mark - Watchdog delegate:
+
+-(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog{
+
+    NSLog(@"!!! longer deadlock: %@", watchdog.threadsStackTrace);
+    
+}
+-(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration{
+
+    NSLog(@"!!! deadlock finished with duration: %.2f sec", duration);
+}
+
 @end
