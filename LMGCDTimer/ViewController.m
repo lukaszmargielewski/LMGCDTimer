@@ -40,7 +40,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     [LMGCDWatchdog singleton].delegate = self;
-    //return;
+    
+    return;
     [self.timer invalidate];
     
     
