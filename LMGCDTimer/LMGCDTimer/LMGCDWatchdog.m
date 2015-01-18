@@ -29,7 +29,7 @@
 #include <mach/mach_time.h>
 
 
-#define kMaxFamesSupported 128
+#define kMaxFamesSupported 32
 #define kMaxThreadsSupported 30
 
 
@@ -70,6 +70,8 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     dispatch_queue_t _watchdog_queue;
     BOOL _waiting_in_main_queue;
     BOOL _deadlock;
+    
+    void *backtrace[kMaxFamesSupported];
 
     
 }
@@ -360,10 +362,6 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
         return nil;
     }
     
-    // 3. Get callstacks of all threads but not this:
-    void * backtrace[kMaxFamesSupported];
-    
-
     ///*
     [sss appendFormat:@"\n--- %i threads (current: %i): ", thread_count, this_thread];
     
@@ -419,6 +417,54 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     
     return sss;
 
+}
+
+-(BOOL)threadsAnalytics{
+    
+    /* Threads */
+    
+    
+    const task_t    this_task = mach_task_self();
+    const thread_t  this_thread = mach_thread_self();
+    
+    kern_return_t kr;
+    
+    thread_act_array_t threads;
+    mach_msg_type_number_t thread_count;
+    
+    kr = task_threads(this_task, &threads, &thread_count);
+    
+    
+    // 1. Get a list of all threads:
+    
+    if (kr != KERN_SUCCESS) {
+        printf("error getting threads: %s", mach_error_string(kr));
+        return nil;
+    }
+    
+    // 2. Get callstacks of all threads but not this:
+    
+    for (mach_msg_type_number_t i = 0; i < thread_count; i++) {
+        
+        thread_t thread = threads[i];
+        
+        if (this_thread == thread)continue;
+        
+        if((kr = thread_suspend(thread)) != KERN_SUCCESS)continue;
+
+        int backtraceLength = ksbt_backtraceThread(thread, (uintptr_t*)backtrace, sizeof(backtrace));
+        
+        if((kr = thread_resume(thread)) != KERN_SUCCESS){}
+        
+        mach_port_deallocate(this_task, thread);
+    }
+    
+    
+        // 4. Deallocation:
+    mach_port_deallocate(this_task, this_thread);
+    vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
+    
+    return NO;
 }
 
 
