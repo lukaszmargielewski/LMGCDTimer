@@ -112,7 +112,7 @@
 }
 -(void)update:(NSTimer *)timer{
     
-    float perc = [LMGCDWatchdog singleton].cpuUsagePercent;
+    float perc = [[LMGCDWatchdog singleton] cpuInfo];
     NSString *percText = [NSString stringWithFormat:@"%.1f", perc];
     self.cpuPercentLabel.text = percText;
     
@@ -138,10 +138,9 @@
 
 #pragma mark - Watchdog delegate:
 
--(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog{
+-(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog stackTrace:(NSString *)stackTrace cpuUsagePercent:(float)cpuUsagePercent{
 
-    NSLog(@"!!! longer deadlock: %@", watchdog.threadsStackTrace);
-    
+    NSLog(@"!!! longer deadlock with cpu usage: %.2f%%: %@", cpuUsagePercent, stackTrace);
 }
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration{
 

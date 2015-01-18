@@ -32,8 +32,27 @@
 #define kMaxFamesSupported 128
 #define kMaxThreadsSupported 30
 
+
+static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
+    
+    static mach_timebase_info_data_t info;
+    
+    if (info.denom == 0) {
+        (void) mach_timebase_info(&info);
+    }
+    
+    uint64_t nanos = mach_time * info.numer / info.denom;
+    NSTimeInterval seconds = (double)nanos / NSEC_PER_SEC;
+    
+    return seconds;
+    
+}
+
+
 @interface LMGCDWatchdog()
 
+@property (nonatomic) float cpuUsagePercent;
+@property (nonatomic, strong) NSString *threadsStackTrace;
 
 @end
 @implementation LMGCDWatchdog{
@@ -51,9 +70,10 @@
     dispatch_queue_t _watchdog_queue;
     BOOL _waiting_in_main_queue;
     BOOL _deadlock;
+ 
+    dispatch_queue_t _queue;
     
 }
-@synthesize queue = _queue;
 
 +(instancetype)singleton{
     
@@ -177,7 +197,7 @@
                 [self createWatchdogQueue];
             }
             
-            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:0.5 duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
+            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:.5 duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
                 
                 [weakSelf watchdogOperation];
                 
@@ -186,7 +206,7 @@
             _watchdogBackgoundTimer.name = @"watchdog";
         }else{
             
-            _watchdogBackgoundTimer.interval = 0.3;
+            _watchdogBackgoundTimer.interval = .5;
             [_watchdogBackgoundTimer resume];
         }
 }
@@ -211,22 +231,9 @@
             
             if (_deadlock) {
                 
-                self.threadsStackTrace = [self threadsInfo];
-                [self cpuInfo];
-                //printf(" - !>");
-                _deadlock = NO;
                 uint64_t tNow = mach_absolute_time();
-                uint64_t elapsed = tNow - _time_start;
-                
-                static mach_timebase_info_data_t info;
-                
-                if (info.denom == 0) {
-                    (void) mach_timebase_info(&info);
-                }
-                
-                uint64_t nanos = elapsed * info.numer / info.denom;
-                double seconds = (double)nanos / NSEC_PER_SEC;
-                
+                _deadlock = NO;                
+                NSTimeInterval seconds = timeIntervalFromMach(tNow - _time_start);
                 
                 [_delegate LMGCDWatchdog:self deadlockDidFinishWithduration:seconds];
             }
@@ -235,11 +242,12 @@
     }else{
     
         if (!_deadlock) {
-        
+            _deadlock = YES;
+            
             self.threadsStackTrace = [self threadsInfo];
             [self cpuInfo];
-            _deadlock = YES;
-            [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self];
+            
+            [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self stackTrace:_threadsStackTrace cpuUsagePercent:_cpuUsagePercent];
             
             //printf("<!");
         }
@@ -251,7 +259,7 @@
 
 #pragma mark - Info methods:
 
--(void)cpuInfo{
+-(float)cpuInfo{
     
     natural_t numCPUsU = 0U;
     kern_return_t err = host_processor_info(mach_host_self(), PROCESSOR_CPU_LOAD_INFO, &numCPUsU, &cpuInfo, &numCpuInfo);
@@ -315,15 +323,16 @@
         
         _cpuUsagePercent = (inUseAll / totalAll) * 100;
 
+        return _cpuUsagePercent;
         
     } else {
         //DDLogCInfo(@"cpu sample error!");
     }
     
 
+    return -1;
     
 }
-
 -(NSString *)threadsInfo{
 
     /* Threads */

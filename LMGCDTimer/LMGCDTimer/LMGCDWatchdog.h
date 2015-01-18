@@ -8,20 +8,30 @@
 
 #import <Foundation/Foundation.h>
 
+@interface LMGCDWatchdogStruct : NSObject{
+
+    dispatch_queue_t    dispatchQueue;
+    NSOperationQueue    *operationQueue;
+    BOOL                blocked;
+    int64_t             timeStart;
+    NSThread            *nsthread;
+    pthread_t           pthread;
+    
+}
+
+@end
+
+    
 @class LMGCDWatchdog;
 
 @protocol LMGCDWatchdogDelegate <NSObject>
 
--(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog;
+-(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog stackTrace:(NSString *)stackTrace cpuUsagePercent:(float)cpuUsagePercent;
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration;
 
 @end
 
 @interface LMGCDWatchdog : NSObject
-
-@property (nonatomic, readonly) dispatch_queue_t queue;
-@property (nonatomic) float cpuUsagePercent;
-@property (nonatomic, strong) NSString *threadsStackTrace;
 
 @property (nonatomic, assign) id<LMGCDWatchdogDelegate>delegate;
 
@@ -32,5 +42,6 @@
 -(void)stopWatchDog;
 -(void)startWatchDog;
 
+-(float)cpuInfo;
 
 @end
