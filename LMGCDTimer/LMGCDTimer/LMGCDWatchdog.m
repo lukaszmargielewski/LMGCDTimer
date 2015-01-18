@@ -70,10 +70,10 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     dispatch_queue_t _watchdog_queue;
     BOOL _waiting_in_main_queue;
     BOOL _deadlock;
- 
-    dispatch_queue_t _queue;
+
     
 }
+@synthesize queue = _queue;
 
 +(instancetype)singleton{
     

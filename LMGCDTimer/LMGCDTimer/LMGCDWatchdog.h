@@ -32,7 +32,7 @@
 @end
 
 @interface LMGCDWatchdog : NSObject
-
+@property (nonatomic, readonly) dispatch_queue_t queue;
 @property (nonatomic, assign) id<LMGCDWatchdogDelegate>delegate;
 
 +(instancetype)singleton;
