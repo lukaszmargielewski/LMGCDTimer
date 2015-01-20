@@ -22,7 +22,7 @@
 		A1C7FC431A474ABC0098356E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC391A474ABC0098356E /* main.m */; };
 		A1C7FC441A474ABC0098356E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC3B1A474ABC0098356E /* ViewController.m */; };
 		A1C7FC4A1A474E720098356E /* LMGCDTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC471A474E720098356E /* LMGCDTimer.m */; };
-		A1C7FC4B1A474E720098356E /* LMGCDWatchdog.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC491A474E720098356E /* LMGCDWatchdog.m */; };
+		A1C7FC4B1A474E720098356E /* LMGCDWatchdog.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC491A474E720098356E /* LMGCDWatchdog.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,7 +54,7 @@
 		A1C7FC461A474E720098356E /* LMGCDTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMGCDTimer.h; sourceTree = "<group>"; };
 		A1C7FC471A474E720098356E /* LMGCDTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMGCDTimer.m; sourceTree = "<group>"; };
 		A1C7FC481A474E720098356E /* LMGCDWatchdog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMGCDWatchdog.h; sourceTree = "<group>"; };
-		A1C7FC491A474E720098356E /* LMGCDWatchdog.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = LMGCDWatchdog.m; sourceTree = "<group>"; };
+		A1C7FC491A474E720098356E /* LMGCDWatchdog.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = LMGCDWatchdog.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,7 +131,7 @@
 				A1C7FC461A474E720098356E /* LMGCDTimer.h */,
 				A1C7FC471A474E720098356E /* LMGCDTimer.m */,
 				A1C7FC481A474E720098356E /* LMGCDWatchdog.h */,
-				A1C7FC491A474E720098356E /* LMGCDWatchdog.m */,
+				A1C7FC491A474E720098356E /* LMGCDWatchdog.mm */,
 			);
 			path = LMGCDTimer;
 			sourceTree = "<group>";
@@ -234,7 +234,7 @@
 				80C22DE51A48376100001340 /* KSMach.c in Sources */,
 				80C22DE91A48376100001340 /* KSMach_x86_64.c in Sources */,
 				80C22DE31A48376100001340 /* KSDynamicLinker.c in Sources */,
-				A1C7FC4B1A474E720098356E /* LMGCDWatchdog.m in Sources */,
+				A1C7FC4B1A474E720098356E /* LMGCDWatchdog.mm in Sources */,
 				80C22DE81A48376100001340 /* KSMach_x86_32.c in Sources */,
 				80C22DE21A48376100001340 /* KSBacktrace.c in Sources */,
 				80C22DE71A48376100001340 /* KSMach_Arm64.c in Sources */,

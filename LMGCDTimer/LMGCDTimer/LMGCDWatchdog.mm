@@ -25,6 +25,9 @@
 #import "KSBacktrace.h"
 #import "KSBacktrace_Private.h"
 
+#include <map>
+#include <utility>
+using namespace std;
 
 #include <mach/mach_time.h>
 
@@ -48,6 +51,12 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     
 }
 
+typedef struct BacktraceStruct{
+
+    void *backtrace[kMaxFamesSupported];
+    int lenght;
+
+}BacktraceStruct;
 
 @interface LMGCDWatchdog()
 
@@ -71,7 +80,11 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     BOOL _waiting_in_main_queue;
     BOOL _deadlock;
     
-    void *backtrace[kMaxFamesSupported];
+    
+    CFMutableDictionaryRef _threadsDict;
+    
+    map<int, BacktraceStruct>_threadsMap;
+    map<int, BacktraceStruct>_threadsMapPrev;
 
     
 }
@@ -191,6 +204,14 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
 -(void)startWatchDog{
 
     
+    if (_threadsDict != NULL) {
+        
+        CFRelease(_threadsDict);
+        _threadsDict = NULL;
+    }
+    // Dictionary With Non Retained Keys and Object Values
+    _threadsDict = CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks);
+    
         __weak LMGCDWatchdog *weakSelf = self;
         if (!_watchdogBackgoundTimer) {
             
@@ -215,6 +236,7 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
 -(void)stopWatchDog{
     
         [_watchdogBackgoundTimer pause];
+    
 }
 
 #pragma mark - Private:
@@ -382,7 +404,7 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
         }
 
 
-        
+        void *backtrace[kMaxFamesSupported];
         int backtraceLength = ksbt_backtraceThread(thread, (uintptr_t*)backtrace, sizeof(backtrace));
         
         [sss appendFormat:@"\n%i. thread %i  backtrace %i frames: \n", i + 1, thread, backtraceLength];
@@ -409,10 +431,7 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
         mach_port_deallocate(this_task, thread);
     }
     
-    
     mach_port_deallocate(this_task, this_thread);
-    // 4. Deallocation:
-
     vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
     
     return sss;
@@ -439,7 +458,7 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     
     if (kr != KERN_SUCCESS) {
         printf("error getting threads: %s", mach_error_string(kr));
-        return nil;
+        return NO;
     }
     
     // 2. Get callstacks of all threads but not this:
@@ -451,16 +470,26 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
         if (this_thread == thread)continue;
         
         if((kr = thread_suspend(thread)) != KERN_SUCCESS)continue;
-
-        int backtraceLength = ksbt_backtraceThread(thread, (uintptr_t*)backtrace, sizeof(backtrace));
+        
+        BacktraceStruct bs;
+        BacktraceStruct *bbs = &bs;
+        bs.lenght = ksbt_backtraceThread(thread, (uintptr_t*)bs.backtrace), sizeof(bs.backtrace));
         
         if((kr = thread_resume(thread)) != KERN_SUCCESS){}
+        
+        _threadsMap[thread] = bs;
+        
+        //CFDictionarySetValue(_threadsDict, (void *)thread, (void *)&bs);
         
         mach_port_deallocate(this_task, thread);
     }
     
     
-        // 4. Deallocation:
+    if (!_threadsMapPrev.empty()) {
+        
+    }
+    
+    _threadsMapPrev = _threadsMap;
     mach_port_deallocate(this_task, this_thread);
     vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
     
