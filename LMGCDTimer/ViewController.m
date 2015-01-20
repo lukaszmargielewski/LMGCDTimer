@@ -146,5 +146,8 @@
 
     NSLog(@"!!! deadlock finished with duration: %.2f sec", duration);
 }
+-(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog didDetectThreadStateChange:(NSString *)threadStateChangeInfo{
 
+    NSLog(@"!!! thread state change: %@", threadStateChangeInfo);
+}
 @end

@@ -28,6 +28,7 @@
 
 -(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog stackTrace:(NSString *)stackTrace cpuUsagePercent:(float)cpuUsagePercent;
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration;
+-(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog didDetectThreadStateChange:(NSString *)threadStateChangeInfo;
 
 @end
 

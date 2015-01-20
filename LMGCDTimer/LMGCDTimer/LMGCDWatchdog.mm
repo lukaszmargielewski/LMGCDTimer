@@ -32,17 +32,17 @@ using namespace std;
 #include <mach/mach_time.h>
 
 
-#define kMaxFamesSupported 32
+#define kMaxFamesSupported 128
 #define kMaxThreadsSupported 30
 
 
 static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     
-    static mach_timebase_info_data_t info;
+    mach_timebase_info_data_t info;
     
-    if (info.denom == 0) {
+    //if (info.denom == 0) {
         (void) mach_timebase_info(&info);
-    }
+    //}
     
     uint64_t nanos = mach_time * info.numer / info.denom;
     NSTimeInterval seconds = (double)nanos / NSEC_PER_SEC;
@@ -53,7 +53,7 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
 
 typedef struct BacktraceStruct{
 
-    void *backtrace[kMaxFamesSupported];
+    uintptr_t backtrace[kMaxFamesSupported];
     int lenght;
 
 }BacktraceStruct;
@@ -84,7 +84,7 @@ typedef struct BacktraceStruct{
     CFMutableDictionaryRef _threadsDict;
     
     map<int, BacktraceStruct>_threadsMap;
-    map<int, BacktraceStruct>_threadsMapPrev;
+    map<int, int>_threadsStates;
 
     
 }
@@ -223,6 +223,8 @@ typedef struct BacktraceStruct{
             _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:.5 duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
                 
                 [weakSelf watchdogOperation];
+                //[weakSelf threadsAnalytics];
+                [weakSelf threadsAnalyticsSimple];
                 
             }];
             
@@ -442,7 +444,7 @@ typedef struct BacktraceStruct{
     
     /* Threads */
     
-    
+    uint64_t ts     = mach_absolute_time();
     const task_t    this_task = mach_task_self();
     const thread_t  this_thread = mach_thread_self();
     
@@ -469,30 +471,235 @@ typedef struct BacktraceStruct{
         
         if (this_thread == thread)continue;
         
+        thread_info_data_t     thinfo;
+        mach_msg_type_number_t thread_info_count;
+        thread_info_count = THREAD_INFO_MAX;
+        
+        kr = thread_info(thread, THREAD_BASIC_INFO, (thread_info_t)thinfo, &thread_info_count);
+        if(kr != KERN_SUCCESS)continue;
+           
+        thread_basic_info_t basic_info_th;
+        basic_info_th = (thread_basic_info_t)thinfo;
+        
         if((kr = thread_suspend(thread)) != KERN_SUCCESS)continue;
         
         BacktraceStruct bs;
-        BacktraceStruct *bbs = &bs;
-        //bs.lenght = ksbt_backtraceThread(thread, (uintptr_t*)bs.backtrace), sizeof(bs.backtrace));
+        bs.lenght = ksbt_backtraceThread(thread, (uintptr_t* const)bs.backtrace, sizeof(bs.backtrace));
         
         if((kr = thread_resume(thread)) != KERN_SUCCESS){}
+
+        
+        
+        BacktraceStruct bsPrev = _threadsMap[thread];
+        
+        int c = MIN(bsPrev.lenght, bs.lenght);
+        
+        //printf("\nthread: %i \n", thread);
+        if (c > 0) {
+          
+            // Prev:
+            for(int a = 0; a < bsPrev.lenght; a++){
+            
+                uintptr_t pointer_prev = bsPrev.backtrace[a];
+                //printf("%lu ", pointer_prev);
+                
+            }
+            
+            //printf("\n");
+            //char** strs = backtrace_symbols((void * const *)(bsPrev.backtrace), bsPrev.lenght);
+            
+            for(int a = 0; a < bsPrev.lenght; ++a) {
+                //if(bsPrev.backtrace[a])
+                   // printf("%s\n", strs[a]);
+            }
+            //free(strs);
+            
+            // This:
+            
+            //printf("\n");
+            for(int a = 0; a < bs.lenght; a++){
+                
+                uintptr_t pointer_this = bs.backtrace[a];
+                //printf("%lu ", pointer_this);
+            }
+            
+            //printf("\n");
+            //strs = backtrace_symbols((void * const *)(bs.backtrace), bs.lenght);
+            
+            for(int a = 0; a < bs.lenght; ++a) {
+                //if(bs.backtrace[a])
+                    //printf("%s\n", strs[a]);
+            }
+            //free(strs);
+            
+            //printf("\n");
+            
+            if (bs.lenght != bsPrev.lenght) {
+                //printf("\n diffrence!!! \n");
+            }
+            
+        }
+        
+        //CFDictionarySetValue(_threadsDict, (void *)thread, (void *)&bs);
         
         _threadsMap[thread] = bs;
         
-        //CFDictionarySetValue(_threadsDict, (void *)thread, (void *)&bs);
+        mach_port_deallocate(this_task, thread);
+    }
+
+    
+    //printf("\n *************** \n");
+    
+    mach_port_deallocate(this_task, this_thread);
+    vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
+    
+    uint64_t te = mach_absolute_time();
+    
+    printf("\n analytics sec: %f (%llu)" , timeIntervalFromMach(te - ts), te - ts);
+    return NO;
+}
+
+-(BOOL)threadsAnalyticsSimple{
+    
+    /* Threads */
+    
+    uint64_t ts     = mach_absolute_time();
+    const task_t    this_task = mach_task_self();
+    const thread_t  this_thread = mach_thread_self();
+    
+    kern_return_t kr;
+    
+    thread_act_array_t threads;
+    mach_msg_type_number_t thread_count;
+    
+    kr = task_threads(this_task, &threads, &thread_count);
+    
+    
+    // 1. Get a list of all threads:
+    
+    if (kr != KERN_SUCCESS) {
+        printf("error getting threads: %s", mach_error_string(kr));
+        return NO;
+    }
+    
+    // 2. Get callstacks of all threads but not this:
+    
+    for (mach_msg_type_number_t i = 0; i < thread_count; i++) {
+        
+        thread_t thread = threads[i];
+        
+        if (this_thread == thread)continue;
+        
+        thread_info_data_t     thinfo;
+        mach_msg_type_number_t thread_info_count = THREAD_INFO_MAX;
+        
+        kr = thread_info(thread, THREAD_BASIC_INFO, (thread_info_t)thinfo, &thread_info_count);
+        if(kr != KERN_SUCCESS)continue;
+        
+        thread_basic_info_t basic_info_th = (thread_basic_info_t)thinfo;
+        integer_t run_state = basic_info_th->run_state;
+        
+        
+        arm_unified_thread_state state;
+        mach_msg_type_number_t state_count = ARM_UNIFIED_THREAD_STATE_COUNT;
+        kr = thread_get_state(thread, ARM_UNIFIED_THREAD_STATE, (thread_state_t) &state, &state_count);
+
+
+        /*
+        STRUCT_MCONTEXT_L machineContext;
+        
+        if(!ksmach_threadState(thread, &machineContext))
+        {
+            return 0;
+        }
+        */
+        /*
+         
+         The thread's run state. Possible values are:
+         TH_STATE_RUNNING
+         The thread is running normally.
+         TH_STATE_STOPPED
+         The thread is stopped.
+         TH_STATE_WAITING
+         The thread is waiting normally.
+         TH_STATE_UNINTERRUPTIBLE
+         The thread is in an un-interruptible wait state.
+         TH_STATE_HALTED
+         The thread is halted at a clean point.
+         
+         */
+
+        if (run_state != _threadsStates[thread]) {
+            
+            char const *sss;
+            
+            switch (run_state) {
+                case TH_STATE_RUNNING:
+                {
+                    
+                    sss = "running";
+                }
+                    break;
+                case TH_STATE_STOPPED:
+                {
+                
+                    sss = "stopped";
+                }
+                    
+                    break;
+                case TH_STATE_WAITING:
+                {
+                
+                    sss = "waiting";
+                
+                }
+                    //printf("\nthread %u is TH_STATE_WAITING", thread);
+                    break;
+                case TH_STATE_UNINTERRUPTIBLE:
+                {
+                    sss = "TH_STATE_UNINTERRUPTIBLE";
+                }
+                    //printf("\nthread %u is TH_STATE_UNINTERRUPTIBLE", thread);
+                    break;
+                case TH_STATE_HALTED:
+                    //printf("\nthread %u is TH_STATE_HALTED", thread);
+                    sss = "halted";
+                    break;
+                default:
+                    sss  = "unknown";
+                    break;
+            }
+            
+            char queue_name[100];
+            char thread_name[100];
+            
+            bool qn = ksmach_getThreadQueueName(thread, queue_name, 100);
+            bool tn = ksmach_getThreadName(thread, thread_name, 100);
+            
+            NSString *aaa = [NSString stringWithFormat:@" --- thread %u (name: %s) (queue: %s) is %s", thread, thread_name, queue_name, sss];
+            
+        
+            //printf("\n --- thread %u (name: %s) (queue: %s) is %s", thread, thread_name, queue_name, sss);
+            [_delegate LMGCDWatchdog:self didDetectThreadStateChange:aaa];
+        }
+        
+        
+        
+        _threadsStates[thread] = run_state;
+        
         
         mach_port_deallocate(this_task, thread);
     }
     
     
-    if (!_threadsMapPrev.empty()) {
-        
-    }
+    //printf("\n *************** \n");
     
-    _threadsMapPrev = _threadsMap;
     mach_port_deallocate(this_task, this_thread);
     vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
     
+    uint64_t te = mach_absolute_time();
+    
+    //printf("\n analytics sec: %f (%llu)\n\n" , timeIntervalFromMach(te - ts), te - ts);
     return NO;
 }
 
