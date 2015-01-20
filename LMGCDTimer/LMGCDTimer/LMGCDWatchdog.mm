@@ -624,14 +624,14 @@ typedef struct BacktraceStruct{
                 {
                     
                     sss = "running";
-                    pref = "---";
+                    pref = "--- > ";
                 }
                     break;
                 case TH_STATE_STOPPED:
                 {
                 
                     sss = "stopped";
-                    pref = "---";
+                    pref = "--- < ";
                 }
                     
                     break;
@@ -639,7 +639,7 @@ typedef struct BacktraceStruct{
                 {
                 
                     sss = "waiting";
-                    pref = "---";
+                    pref = "--- < ";
                 
                 }
                     //printf("\nthread %u is TH_STATE_WAITING", thread);
@@ -647,18 +647,18 @@ typedef struct BacktraceStruct{
                 case TH_STATE_UNINTERRUPTIBLE:
                 {
                     sss = "TH_STATE_UNINTERRUPTIBLE";
-                    pref = "---";
+                    pref = "--- ! ";
                 }
                     //printf("\nthread %u is TH_STATE_UNINTERRUPTIBLE", thread);
                     break;
                 case TH_STATE_HALTED:
                     //printf("\nthread %u is TH_STATE_HALTED", thread);
                     sss = "halted";
-                    pref = "---";
+                    pref = "--- # ";
                     break;
                 default:
                     sss  = "unknown";
-                    pref = "---";
+                    pref = "--- ? ";
                     break;
             }
             
