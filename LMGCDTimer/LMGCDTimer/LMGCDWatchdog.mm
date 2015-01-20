@@ -473,7 +473,7 @@ typedef struct BacktraceStruct{
         
         BacktraceStruct bs;
         BacktraceStruct *bbs = &bs;
-        bs.lenght = ksbt_backtraceThread(thread, (uintptr_t*)bs.backtrace), sizeof(bs.backtrace));
+        //bs.lenght = ksbt_backtraceThread(thread, (uintptr_t*)bs.backtrace), sizeof(bs.backtrace));
         
         if((kr = thread_resume(thread)) != KERN_SUCCESS){}
         
