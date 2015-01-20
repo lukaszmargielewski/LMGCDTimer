@@ -599,12 +599,13 @@ typedef struct BacktraceStruct{
         thread_basic_info_t basic_info_th = (thread_basic_info_t)thinfo;
         integer_t run_state = basic_info_th->run_state;
         
+        /*
         
         arm_unified_thread_state state;
         mach_msg_type_number_t state_count = ARM_UNIFIED_THREAD_STATE_COUNT;
         kr = thread_get_state(thread, ARM_UNIFIED_THREAD_STATE, (thread_state_t) &state, &state_count);
 
-
+        */
         /*
         STRUCT_MCONTEXT_L machineContext;
         
@@ -613,37 +614,24 @@ typedef struct BacktraceStruct{
             return 0;
         }
         */
-        /*
-         
-         The thread's run state. Possible values are:
-         TH_STATE_RUNNING
-         The thread is running normally.
-         TH_STATE_STOPPED
-         The thread is stopped.
-         TH_STATE_WAITING
-         The thread is waiting normally.
-         TH_STATE_UNINTERRUPTIBLE
-         The thread is in an un-interruptible wait state.
-         TH_STATE_HALTED
-         The thread is halted at a clean point.
-         
-         */
 
         if (run_state != _threadsStates[thread]) {
             
             char const *sss;
-            
+            char const *pref;
             switch (run_state) {
                 case TH_STATE_RUNNING:
                 {
                     
                     sss = "running";
+                    pref = "---";
                 }
                     break;
                 case TH_STATE_STOPPED:
                 {
                 
                     sss = "stopped";
+                    pref = "---";
                 }
                     
                     break;
@@ -651,6 +639,7 @@ typedef struct BacktraceStruct{
                 {
                 
                     sss = "waiting";
+                    pref = "---";
                 
                 }
                     //printf("\nthread %u is TH_STATE_WAITING", thread);
@@ -658,15 +647,18 @@ typedef struct BacktraceStruct{
                 case TH_STATE_UNINTERRUPTIBLE:
                 {
                     sss = "TH_STATE_UNINTERRUPTIBLE";
+                    pref = "---";
                 }
                     //printf("\nthread %u is TH_STATE_UNINTERRUPTIBLE", thread);
                     break;
                 case TH_STATE_HALTED:
                     //printf("\nthread %u is TH_STATE_HALTED", thread);
                     sss = "halted";
+                    pref = "---";
                     break;
                 default:
                     sss  = "unknown";
+                    pref = "---";
                     break;
             }
             
@@ -676,7 +668,7 @@ typedef struct BacktraceStruct{
             bool qn = ksmach_getThreadQueueName(thread, queue_name, 100);
             bool tn = ksmach_getThreadName(thread, thread_name, 100);
             
-            NSString *aaa = [NSString stringWithFormat:@" --- thread %u (name: %s) (queue: %s) is %s", thread, thread_name, queue_name, sss];
+            NSString *aaa = [NSString stringWithFormat:@" %s thread %u (name: %s) (queue: %s) is %s | threads: %i", pref, thread, thread_name, queue_name, sss, thread_count];
             
         
             //printf("\n --- thread %u (name: %s) (queue: %s) is %s", thread, thread_name, queue_name, sss);
