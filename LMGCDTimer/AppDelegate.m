@@ -22,6 +22,7 @@
     
     [[LMGCDWatchdog singleton] startWatchDog];
     
+    NSArray *fb = [[LMGCDWatchdog singleton] getOldLogFiles];
     return YES;
 }
 

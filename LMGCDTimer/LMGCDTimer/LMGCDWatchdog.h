@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#define D_MIN 60.0
+#define D_HOUR D_MIN * 60.0
+#define D_DAY D_HOUR * 24.0
 
 @interface LMGCDWatchdogStruct : NSObject{
 
@@ -26,7 +29,7 @@
 
 @protocol LMGCDWatchdogDelegate <NSObject>
 
--(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog stackTrace:(NSString *)stackTrace cpuUsagePercent:(float)cpuUsagePercent;
+-(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog cpuUsagePercent:(float)cpuUsagePercent;
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration;
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog didDetectThreadStateChange:(NSString *)threadStateChangeInfo;
 
@@ -44,5 +47,10 @@
 -(void)startWatchDog;
 
 -(float)cpuInfo;
+
+
+-(NSArray *)getALlLogFiles;
+-(NSArray *)getAllLogFilesSorted;
+-(void)deleteOldLogFiles;
 
 @end

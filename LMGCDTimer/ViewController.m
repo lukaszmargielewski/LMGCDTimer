@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "LMGCDWatchdog.h"
 #import "LMGCDTimer.h"
+#import "LMMmapLog.h"
 
 @interface ViewController ()<LMGCDWatchdogDelegate>
 @property (nonatomic, strong) NSTimer *timer;
@@ -41,7 +42,12 @@
     // Do any additional setup after loading the view, typically from a nib.
     [LMGCDWatchdog singleton].delegate = self;
     
-    return;
+    //[self startTimers];
+    [LMMmapLog log:"log test with: %s", "tst 1"];
+}
+
+-(void)startTimers{
+
     [self.timer invalidate];
     
     
@@ -51,12 +57,12 @@
     
     [timerLow invalidate];
     timerLow = [LMGCDTimer timerWithInterval:0.05 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0) block:^{
-    
-    
+        
+        
         timer_low_count++;
         
         dispatch_sync(dispatch_get_main_queue(), ^{
-        
+            
             self.timerLabelLow.text = [NSString stringWithFormat:@"%llu", timer_low_count];
         });
         
@@ -69,7 +75,7 @@
         timer_def_count++;
         
         dispatch_sync(dispatch_get_main_queue(), ^{
-        
+            
             self.timerLabelDef.text = [NSString stringWithFormat:@"%llu", timer_def_count];
         });
         
@@ -82,7 +88,7 @@
         timer_back_count++;
         
         dispatch_sync(dispatch_get_main_queue(), ^{
-        
+            
             self.timerLabelBack.text = [NSString stringWithFormat:@"%llu", timer_back_count];
         });
         
@@ -96,16 +102,15 @@
         timer_high_count++;
         
         dispatch_sync(dispatch_get_main_queue(), ^{
-        
+            
             self.timerLabelHigh.text = [NSString stringWithFormat:@"%llu", timer_high_count];
         });
         
         
         
     }];
-    
-}
 
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -138,9 +143,9 @@
 
 #pragma mark - Watchdog delegate:
 
--(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog stackTrace:(NSString *)stackTrace cpuUsagePercent:(float)cpuUsagePercent{
+-(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog cpuUsagePercent:(float)cpuUsagePercent{
 
-    NSLog(@"!!! longer deadlock with cpu usage: %.2f%%: %@", cpuUsagePercent, stackTrace);
+    NSLog(@"!!! longer deadlock with cpu usage: %.2f%%", cpuUsagePercent);
 }
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration{
 

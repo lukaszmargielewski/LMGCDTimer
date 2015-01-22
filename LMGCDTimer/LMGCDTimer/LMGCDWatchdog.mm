@@ -20,6 +20,7 @@
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #import "KSMach.h"
 #import "KSBacktrace.h"
@@ -34,7 +35,7 @@ using namespace std;
 
 #define kMaxFamesSupported 128
 #define kMaxThreadsSupported 30
-
+#define kMaxLogFileSizeInBytes 1 * 1024 * 1024
 
 static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     
@@ -80,12 +81,32 @@ typedef struct BacktraceStruct{
     BOOL _waiting_in_main_queue;
     BOOL _deadlock;
     
-    
-    CFMutableDictionaryRef _threadsDict;
-    
     map<int, BacktraceStruct>_threadsMap;
     map<int, int>_threadsStates;
 
+    NSString        *_logFilePath;
+    NSString        *_logDir;
+    int             _fileDescriptor;
+    
+    uint64_t        _firstLogMachTime;
+    NSDate          *_firstLogDate;
+    NSTimeInterval  _firstLogTimeInterval;
+
+    NSDateFormatter *_dateFormatter;
+    NSDateFormatter *_dateFormatter2;
+    void *backtrace[kMaxFamesSupported];
+    
+    NSDate *_creationDate;
+    
+    char queue_name[100];
+    char thread_name[100];
+    
+    int backtraceLength;
+    
+    bool qn;
+    bool tn;
+    
+    
     
 }
 @synthesize queue = _queue;
@@ -104,7 +125,10 @@ typedef struct BacktraceStruct{
     
     return shared;
 }
+-(void)dealloc{
 
+    close(_fileDescriptor);
+}
 -(void)createQueue{
     
     // Create operation queue:
@@ -153,6 +177,52 @@ typedef struct BacktraceStruct{
     }
     
 }
+-(void)createLogFile{
+
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+    if (!_logDir) {
+    
+        _logDir         = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0] stringByAppendingPathComponent:@"LMCGDWatchdog"];
+        
+    }
+    
+    BOOL isDir = NO;
+    
+    if (![fm fileExistsAtPath:_logDir isDirectory:&isDir] || !isDir){
+        
+        NSError *err = nil;
+        BOOL ok = [fm createDirectoryAtPath:_logDir withIntermediateDirectories:YES attributes:nil error:&err];
+        if (!ok || err) {
+            NSLog(@"error creating log dir: %@", err);
+        }
+        
+    }
+
+    
+    _firstLogDate           = [NSDate date];
+    _firstLogMachTime       = mach_absolute_time();
+    _firstLogTimeInterval   = _firstLogDate.timeIntervalSince1970;
+    
+    NSString *fileName = [[_dateFormatter2 stringFromDate:_firstLogDate] stringByAppendingPathExtension:@"log"];
+    _logFilePath = [_logDir stringByAppendingPathComponent:fileName];
+    
+    isDir = NO;
+    
+    if (![fm fileExistsAtPath:_logFilePath isDirectory:&isDir] || isDir) {
+        
+        BOOL OK = [fm createFileAtPath:_logFilePath contents:nil attributes:nil];
+        if (!OK) {
+            _logFilePath = nil;
+        }
+    }
+    
+    if (_logFilePath) {
+        NSLog(@"created file path: %@", _logFilePath);
+        close(_fileDescriptor);
+        _fileDescriptor = open([_logFilePath fileSystemRepresentation], O_WRONLY | O_APPEND);
+    }
+}
 
 -(id)init{
     
@@ -169,33 +239,17 @@ typedef struct BacktraceStruct{
         
         CPUUsageLock = [[NSLock alloc] init];
     
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        _dateFormatter.dateFormat = @"yyyy/MM/dd HH:mm:ss.SSS";
+        
+        _dateFormatter2 = [[NSDateFormatter alloc] init];
+        _dateFormatter2.dateFormat = @"yyyy_MM_dd_HH-mm-ss";
+        
+        _creationDate           = [NSDate date];
         [self createQueue];
         
     }
     return self;
-}
-
-
--(void)dispatchDebug:(NSString *)name async:(void(^)())block{
-    
-#ifndef APPSTORE
-    //if(name)DDLogCInfo(@"s: %@",name);
-#endif
-
-    if ([NSThread isMainThread]) {
-        block();
-        //if(name)DDLogCInfo(@"e: %@ (sync)",name);
-        return;
-    }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            block();
-#ifndef APPSTORE
-            //if(name)DDLogCInfo(@"e: %@ (async)",name);
-#endif
-        });
-
-    
 }
 
 
@@ -204,13 +258,9 @@ typedef struct BacktraceStruct{
 -(void)startWatchDog{
 
     
-    if (_threadsDict != NULL) {
-        
-        CFRelease(_threadsDict);
-        _threadsDict = NULL;
+    if (!_logFilePath) {
+        [self createLogFile];
     }
-    // Dictionary With Non Retained Keys and Object Values
-    _threadsDict = CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks);
     
         __weak LMGCDWatchdog *weakSelf = self;
         if (!_watchdogBackgoundTimer) {
@@ -224,7 +274,7 @@ typedef struct BacktraceStruct{
                 
                 [weakSelf watchdogOperation];
                 //[weakSelf threadsAnalytics];
-                [weakSelf threadsAnalyticsSimple];
+                //[weakSelf threadsAnalyticsSimple];
                 
             }];
             
@@ -270,10 +320,10 @@ typedef struct BacktraceStruct{
         if (!_deadlock) {
             _deadlock = YES;
             
-            self.threadsStackTrace = [self threadsInfo];
+            [self threadsInfo];
             [self cpuInfo];
             
-            [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self stackTrace:_threadsStackTrace cpuUsagePercent:_cpuUsagePercent];
+            [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self cpuUsagePercent:_cpuUsagePercent];
             
             //printf("<!");
         }
@@ -349,6 +399,8 @@ typedef struct BacktraceStruct{
         
         _cpuUsagePercent = (inUseAll / totalAll) * 100;
 
+        dprintf(_fileDescriptor, "- CPU usage: %f %%\n", _cpuUsagePercent);
+        
         return _cpuUsagePercent;
         
     } else {
@@ -359,12 +411,9 @@ typedef struct BacktraceStruct{
     return -1;
     
 }
--(NSString *)threadsInfo{
-
-    /* Threads */
+-(void)threadsInfo{
     
-    NSMutableString *sss = [[NSMutableString alloc] initWithCapacity:10000];
-    
+    uint64_t ts     = mach_absolute_time();
     const task_t    this_task = mach_task_self();
     const thread_t  this_thread = mach_thread_self();
     
@@ -383,61 +432,52 @@ typedef struct BacktraceStruct{
         thread_count = 0;
         printf("error getting threads: %s", mach_error_string(kr));
     
-        return nil;
+        return;
     }
-    
-    ///*
-    [sss appendFormat:@"\n--- %i threads (current: %i): ", thread_count, this_thread];
-    
+
     
     for (mach_msg_type_number_t i = 0; i < thread_count; i++) {
         
         thread_t thread = threads[i];
         
-        if (this_thread == thread) {
-            //printf("\n%i. thread: %i self - current, skipping", i + 1, thread);
-            continue;
-        }
+        if (this_thread == thread)continue;
         
-        if((kr = thread_suspend(thread)) != KERN_SUCCESS)
-        {
-            continue;
-            // Don't treat this as a fatal error.
-        }
+        if((kr = thread_suspend(thread)) != KERN_SUCCESS)continue;
+        
+        backtraceLength = ksbt_backtraceThread(thread, (uintptr_t*)backtrace, sizeof(backtrace));
 
-
-        void *backtrace[kMaxFamesSupported];
-        int backtraceLength = ksbt_backtraceThread(thread, (uintptr_t*)backtrace, sizeof(backtrace));
-        
-        [sss appendFormat:@"\n%i. thread %i  backtrace %i frames: \n", i + 1, thread, backtraceLength];
-        
+        qn = ksmach_getThreadQueueName(thread, queue_name, 100);
+        tn = ksmach_getThreadName(thread, thread_name, 100);
     
-        
-        char** strs = backtrace_symbols(backtrace, backtraceLength);
-        
-        for(int a = 0; a < backtraceLength; ++a) {
-            
-            //printf("%lu ", backtrace[a]);
-            
-            if(backtrace[a])
-                [sss appendFormat:@"%s \n",strs[a]];
-            else
-                break;
-            
-        }
-        free(strs);
-        
+        dprintf(_fileDescriptor, "\n*   %i thread %i (%s) queue: %s\n", i, thread, thread_name, queue_name);
+        backtrace_symbols_fd(backtrace, backtraceLength, _fileDescriptor);
     
         if((kr = thread_resume(thread)) != KERN_SUCCESS){}
         
         mach_port_deallocate(this_task, thread);
     }
     
+    uint64_t dt = ts - _firstLogMachTime;
+    double dt_sec = timeIntervalFromMach(dt);
+    time_t raw_time = _firstLogTimeInterval + dt_sec;
+    
+    dprintf(_fileDescriptor, "-------------------\n- time: %s-------------------\n", ctime(&raw_time));
+    //printf("\n -- %s --- (%llu / %f sec) \n", ctime(&raw_time), dt, dt_sec);
+    
+    
     mach_port_deallocate(this_task, this_thread);
     vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
-    
-    return sss;
 
+    uint64_t te     = mach_absolute_time();
+    //dprintf(_fileDescriptor, "\n---------\n- time: %s\n---------\n\n", ctime(&raw_time));
+    printf("\nthread info cycles: %llu / time: %f sec\n", te - ts, timeIntervalFromMach(te - ts));
+    
+    off_t file_size = lseek(_fileDescriptor, 0, SEEK_END);
+    
+    if (file_size > kMaxLogFileSizeInBytes) {
+        [self createLogFile];
+        [self getLogFilesBeforeCreation];
+    }
 }
 
 -(BOOL)threadsAnalytics{
@@ -558,7 +598,6 @@ typedef struct BacktraceStruct{
     printf("\n analytics sec: %f (%llu)" , timeIntervalFromMach(te - ts), te - ts);
     return NO;
 }
-
 -(BOOL)threadsAnalyticsSimple{
     
     /* Threads */
@@ -665,8 +704,8 @@ typedef struct BacktraceStruct{
             char queue_name[100];
             char thread_name[100];
             
-            bool qn = ksmach_getThreadQueueName(thread, queue_name, 100);
-            bool tn = ksmach_getThreadName(thread, thread_name, 100);
+            //bool qn = ksmach_getThreadQueueName(thread, queue_name, 100);
+            //bool tn = ksmach_getThreadName(thread, thread_name, 100);
             
             NSString *aaa = [NSString stringWithFormat:@" %s thread %u (name: %s) (queue: %s) is %s | threads: %i", pref, thread, thread_name, queue_name, sss, thread_count];
             
@@ -695,6 +734,116 @@ typedef struct BacktraceStruct{
     return NO;
 }
 
+
+#pragma mark - Log files:
+
+-(NSArray *)getAllLogFilesSorted{
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSError *err = nil;
+    NSArray *fff = [self getALlLogFiles];
+    
+    fff = [fff sortedArrayUsingComparator:^NSComparisonResult(NSString *path1, NSString *path2){
+    
+        NSError *err = nil;
+        NSDictionary *attributes1 = [fileManager attributesOfItemAtPath:path1 error:&err];
+        NSDictionary *attributes2 = [fileManager attributesOfItemAtPath:path2 error:&err];
+        
+        if (attributes1 && attributes2) {
+            
+            NSDate *date1 = [attributes1 fileCreationDate];
+            NSDate *date2 = [attributes2 fileCreationDate];
+            
+            if (date1 && date2) {
+                
+                return  [date1 compare:date2];
+            }
+        }
+        
+        return NSOrderedSame;
+        
+    }];
+    
+    NSLog(@"all log files sorted(%lu): %@", fff.count, fff);
+    return fff;
+}
+
+
+-(NSArray *)getALlLogFiles{
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSError *err = nil;
+    NSArray *fff = [fileManager contentsOfDirectoryAtPath:_logDir error:&err];
+    fff =  [fff filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"pathExtension = 'log'"]];
+    NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:fff.count];
+    
+    for (NSString *fileName in fff) {
+        
+        NSString *aPath = [_logDir stringByAppendingPathComponent:fileName];
+        
+        if (_logFilePath && [_logFilePath isEqualToString:aPath]) {
+            continue;
+        }
+
+        [results addObject:aPath];
+    }
+    
+     NSLog(@"all log files (%lu): %@", results.count, results);
+    return results;
+}
+-(NSArray *)getLogFilesBeforeCreation{
+
+    NSArray *all = [self getALlLogFiles];
+    
+    NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:all.count];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSLog(@"all log files (%lu): %@", all.count, all);
+    
+    for (NSString *filePath in all) {
+        
+        NSError *err = nil;
+        NSDictionary *attributes = [fileManager attributesOfItemAtPath:filePath
+                                                                 error:&err];
+        
+        if (attributes) {
+        
+            NSDate *date = [attributes fileCreationDate];
+            
+            if (date && [date compare:_creationDate] == NSOrderedAscending) {
+                [results addObject:filePath];
+            }
+        }
+        
+        
+    }
+    NSLog(@"bef log files (%lu): %@", (unsigned long)results.count, results);
+    
+    return results;
+}
+
+-(void)deleteOldLogFiles{
+
+    close(_fileDescriptor);
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSArray *allToDelete = [self getALlLogFiles];
+    
+    for(NSString *filePath in allToDelete){
+    
+        if (_logFilePath && [_logFilePath isEqualToString:filePath]) {
+            continue;
+        }
+        
+        NSError *error = nil;
+        [fileManager removeItemAtPath:filePath error:&error];
+    }
+    
+    [self createLogFile];
+}
 
 @end
 

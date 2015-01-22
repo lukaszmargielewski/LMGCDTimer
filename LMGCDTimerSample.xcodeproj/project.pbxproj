@@ -15,6 +15,7 @@
 		80C22DE71A48376100001340 /* KSMach_Arm64.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDE1A48376100001340 /* KSMach_Arm64.c */; };
 		80C22DE81A48376100001340 /* KSMach_x86_32.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDF1A48376100001340 /* KSMach_x86_32.c */; };
 		80C22DE91A48376100001340 /* KSMach_x86_64.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DE01A48376100001340 /* KSMach_x86_64.c */; };
+		A12B7CB91A7114BD002ED49B /* LMMmapLog.m in Sources */ = {isa = PBXBuildFile; fileRef = A12B7CB81A7114BD002ED49B /* LMMmapLog.m */; };
 		A1C7FC3C1A474ABC0098356E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC2D1A474ABC0098356E /* AppDelegate.m */; };
 		A1C7FC3F1A474ABC0098356E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1C7FC331A474ABC0098356E /* LaunchScreen.xib */; };
 		A1C7FC401A474ABC0098356E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1C7FC351A474ABC0098356E /* Main.storyboard */; };
@@ -41,6 +42,8 @@
 		80C22DDF1A48376100001340 /* KSMach_x86_32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_32.c; sourceTree = "<group>"; };
 		80C22DE01A48376100001340 /* KSMach_x86_64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_64.c; sourceTree = "<group>"; };
 		80C22DE11A48376100001340 /* KSMachApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMachApple.h; sourceTree = "<group>"; };
+		A12B7CB71A7114BD002ED49B /* LMMmapLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMMmapLog.h; sourceTree = "<group>"; };
+		A12B7CB81A7114BD002ED49B /* LMMmapLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMmapLog.m; sourceTree = "<group>"; };
 		A1C7FBF31A4701AF0098356E /* LMGCDTimerSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LMGCDTimerSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1C7FC2C1A474ABC0098356E /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		A1C7FC2D1A474ABC0098356E /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -130,6 +133,8 @@
 				80C22DD21A48376100001340 /* Backtrace */,
 				A1C7FC461A474E720098356E /* LMGCDTimer.h */,
 				A1C7FC471A474E720098356E /* LMGCDTimer.m */,
+				A12B7CB71A7114BD002ED49B /* LMMmapLog.h */,
+				A12B7CB81A7114BD002ED49B /* LMMmapLog.m */,
 				A1C7FC481A474E720098356E /* LMGCDWatchdog.h */,
 				A1C7FC491A474E720098356E /* LMGCDWatchdog.mm */,
 			);
@@ -230,6 +235,7 @@
 				80C22DE61A48376100001340 /* KSMach_Arm.c in Sources */,
 				A1C7FC431A474ABC0098356E /* main.m in Sources */,
 				A1C7FC441A474ABC0098356E /* ViewController.m in Sources */,
+				A12B7CB91A7114BD002ED49B /* LMMmapLog.m in Sources */,
 				80C22DE41A48376100001340 /* KSLogger.m in Sources */,
 				80C22DE51A48376100001340 /* KSMach.c in Sources */,
 				80C22DE91A48376100001340 /* KSMach_x86_64.c in Sources */,

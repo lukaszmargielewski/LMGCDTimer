@@ -23,7 +23,19 @@
 
 #endif
 
-
 @interface LMMmapLog : NSObject
+
+/**
+ * Logging Primitive.
+ *
+ * This method is used by the macros above.
+ * It is suggested you stick with the macros as they're easier to use.
+ **/
+@property (nonatomic, readonly) dispatch_queue_t queue;
+
++(void)log:( const char *) format, ...;
+
+
+
 
 @end
