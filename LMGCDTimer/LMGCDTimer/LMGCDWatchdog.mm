@@ -28,6 +28,7 @@
 
 #include <map>
 #include <utility>
+
 using namespace std;
 
 #include <mach/mach_time.h>
@@ -36,6 +37,7 @@ using namespace std;
 #define kMaxFamesSupported 128
 #define kMaxThreadsSupported 30
 #define kMaxLogFileSizeInBytes 1 * 1024 * 1024
+
 
 static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     
@@ -56,6 +58,7 @@ typedef struct BacktraceStruct{
 
     uintptr_t backtrace[kMaxFamesSupported];
     int lenght;
+    
 
 }BacktraceStruct;
 
@@ -106,7 +109,8 @@ typedef struct BacktraceStruct{
     bool qn;
     bool tn;
     
-    
+    NSMutableArray *_asyncBlocks;
+    NSMutableArray *_syncBlocks;
     
 }
 @synthesize queue = _queue;
@@ -330,21 +334,6 @@ typedef struct BacktraceStruct{
 
     }
     
-}
-
-
-#pragma mark - GCD:
-
-void watch_disp_async(char *name, dispatch_queue_t queue, VoidBlock block){
-
-    watch_disp_async("watched_block_name_here", queue, block);
-    
-}
-
-void watch_disp_sync(char *name, dispatch_queue_t queue, VoidBlock block){
-
-    
-    watch_disp_sync("watched_block_name_here", queue, block);
 }
 
 
@@ -860,8 +849,57 @@ void watch_disp_sync(char *name, dispatch_queue_t queue, VoidBlock block){
     [self createLogFile];
 }
 
-@end
 
++(void)addAsyncBlockName:(NSString *)blockName{
+
+    [[LMGCDWatchdog singleton] addAsyncBlockName:blockName];
+
+}
++(void)removeAsyncBlockName:(NSString *)blockName{
+
+    [[LMGCDWatchdog singleton] removeAsyncBlockName:blockName];
+}
+
++(void)addSyncBlockName:(NSString *)blockName{
+
+    [[LMGCDWatchdog singleton] addSyncBlockName:blockName];
+}
++(void)removeSyncBlockName:(NSString *)blockName{
+
+    [[LMGCDWatchdog singleton] removeSyncBlockName:blockName];
+    
+}
+
+
+
+-(void)addAsyncBlockName:(NSString *)blockName{
+    
+    if(!_asyncBlocks)
+        _asyncBlocks = [[NSMutableArray alloc] initWithCapacity:50];
+    
+    NSLog(@"async start: %@", blockName);
+    
+    [_asyncBlocks addObject:blockName];
+}
+-(void)removeAsyncBlockName:(NSString *)blockName{
+    
+    [_asyncBlocks removeObject:blockName];
+    NSLog(@"async end: %@", blockName);
+}
+
+-(void)addSyncBlockName:(NSString *)blockName{
+    
+    NSLog(@"sync start: %@", blockName);
+    [_syncBlocks addObject:blockName];
+}
+-(void)removeSyncBlockName:(NSString *)blockName{
+    
+    [_syncBlocks removeObject:blockName];
+    NSLog(@"sync end: %@", blockName);
+}
+
+
+@end
 
 
 
