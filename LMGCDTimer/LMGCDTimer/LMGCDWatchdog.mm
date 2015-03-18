@@ -333,6 +333,21 @@ typedef struct BacktraceStruct{
 }
 
 
+#pragma mark - GCD:
+
+void watch_disp_async(char *name, dispatch_queue_t queue, VoidBlock block){
+
+    watch_disp_async("watched_block_name_here", queue, block);
+    
+}
+
+void watch_disp_sync(char *name, dispatch_queue_t queue, VoidBlock block){
+
+    
+    watch_disp_sync("watched_block_name_here", queue, block);
+}
+
+
 #pragma mark - Info methods:
 
 -(float)cpuInfo{

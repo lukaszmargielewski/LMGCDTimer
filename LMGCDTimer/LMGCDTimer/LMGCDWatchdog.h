@@ -11,6 +11,15 @@
 #define D_HOUR D_MIN * 60.0
 #define D_DAY D_HOUR * 24.0
 
+
+typedef void(^VoidBlock)();
+
+void watch_disp_async(char *name, dispatch_queue_t queue, VoidBlock block);
+void watch_disp_sync(char *name, dispatch_queue_t queue, VoidBlock block);
+
+
+
+
 @interface LMGCDWatchdogStruct : NSObject{
 
     dispatch_queue_t    dispatchQueue;
