@@ -277,8 +277,6 @@ typedef struct BacktraceStruct{
             _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:.5 duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
                 
                 [weakSelf watchdogOperation];
-                //[weakSelf threadsAnalytics];
-                //[weakSelf threadsAnalyticsSimple];
                 
             }];
             
@@ -877,25 +875,25 @@ typedef struct BacktraceStruct{
     if(!_asyncBlocks)
         _asyncBlocks = [[NSMutableArray alloc] initWithCapacity:50];
     
-    NSLog(@"async start: %@", blockName);
+    //NSLog(@"async start: %@", blockName);
     
     [_asyncBlocks addObject:blockName];
 }
 -(void)removeAsyncBlockName:(NSString *)blockName{
     
     [_asyncBlocks removeObject:blockName];
-    NSLog(@"async end: %@", blockName);
+    //NSLog(@"async end: %@", blockName);
 }
 
 -(void)addSyncBlockName:(NSString *)blockName{
     
-    NSLog(@"sync start: %@", blockName);
+    //NSLog(@"sync start: %@", blockName);
     [_syncBlocks addObject:blockName];
 }
 -(void)removeSyncBlockName:(NSString *)blockName{
     
     [_syncBlocks removeObject:blockName];
-    NSLog(@"sync end: %@", blockName);
+    //NSLog(@"sync end: %@", blockName);
 }
 
 
