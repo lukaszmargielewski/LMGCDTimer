@@ -73,10 +73,10 @@ typedef void(^VoidBlock)();
 
 static inline void watch_disp_async(NSString *name, dispatch_queue_t queue, VoidBlock block)
 {
-#ifdef APPSTORE
+//#ifdef APPSTORE
     dispatch_async(queue, block);
     return;
-#endif
+//#endif
     
     if (!name) {
         
@@ -99,10 +99,10 @@ static inline void watch_disp_async(NSString *name, dispatch_queue_t queue, Void
 static inline void watch_disp_sync(NSString *name, dispatch_queue_t queue, VoidBlock block)
 {
     
-#ifdef APPSTORE
+//#ifdef APPSTORE
     dispatch_sync(queue, block);
     return;
-#endif
+//#endif
     
     if (!name) {
         
