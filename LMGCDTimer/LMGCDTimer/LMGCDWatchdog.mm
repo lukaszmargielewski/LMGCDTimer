@@ -198,7 +198,7 @@ typedef struct BacktraceStruct{
         NSError *err = nil;
         BOOL ok = [fm createDirectoryAtPath:_logDir withIntermediateDirectories:YES attributes:nil error:&err];
         if (!ok || err) {
-            NSLog(@"error creating log dir: %@", err);
+            //DLog(@"error creating log dir: %@", err);
         }
         
     }
@@ -222,7 +222,7 @@ typedef struct BacktraceStruct{
     }
     
     if (_logFilePath) {
-        NSLog(@"created file path: %@", _logFilePath);
+        //DLog(@"created file path: %@", _logFilePath);
         close(_fileDescriptor);
         _fileDescriptor = open([_logFilePath fileSystemRepresentation], O_WRONLY | O_APPEND);
     }
@@ -767,7 +767,7 @@ typedef struct BacktraceStruct{
         
     }];
     
-    NSLog(@"all log files sorted(%lu): %@", fff.count, fff);
+    //DLog(@"all log files sorted(%lu): %@", fff.count, fff);
     return fff;
 }
 
@@ -792,7 +792,7 @@ typedef struct BacktraceStruct{
         [results addObject:aPath];
     }
     
-     NSLog(@"all log files (%lu): %@", results.count, results);
+     //DLog(@"all log files (%lu): %@", results.count, results);
     return results;
 }
 -(NSArray *)getLogFilesBeforeCreation{
@@ -802,7 +802,7 @@ typedef struct BacktraceStruct{
     NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:all.count];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    NSLog(@"all log files (%lu): %@", all.count, all);
+    //DLog(@"all log files (%lu): %@", all.count, all);
     
     for (NSString *filePath in all) {
         
@@ -821,7 +821,7 @@ typedef struct BacktraceStruct{
         
         
     }
-    NSLog(@"bef log files (%lu): %@", (unsigned long)results.count, results);
+    //DLog(@"bef log files (%lu): %@", (unsigned long)results.count, results);
     
     return results;
 }
