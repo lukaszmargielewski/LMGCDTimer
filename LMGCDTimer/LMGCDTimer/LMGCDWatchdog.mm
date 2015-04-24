@@ -262,6 +262,8 @@ typedef struct BacktraceStruct{
 -(void)startWatchDog{
 
     
+    if(_watchdogBackgoundTimer.running)return;
+    
     if (!_logFilePath) {
         [self createLogFile];
     }
