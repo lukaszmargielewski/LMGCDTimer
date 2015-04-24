@@ -22,10 +22,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#import "KSCrash.h"
+///*
 #import "KSMach.h"
 #import "KSBacktrace.h"
 #import "KSBacktrace_Private.h"
-
+//*/
 #include <map>
 #include <utility>
 
@@ -323,8 +325,8 @@ typedef struct BacktraceStruct{
     
         if (!_deadlock) {
             _deadlock = YES;
-            
-            [self threadsInfo];
+            [self ksCrashThreadInfo];
+            //[self threadsInfo];
             [self cpuInfo];
             
             [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self cpuUsagePercent:_cpuUsagePercent];
@@ -338,7 +340,9 @@ typedef struct BacktraceStruct{
 
 
 #pragma mark - Info methods:
+-(void)ksCrashThreadInfo{
 
+}
 -(float)cpuInfo{
     
     natural_t numCPUsU = 0U;

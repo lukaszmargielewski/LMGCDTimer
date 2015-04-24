@@ -12,6 +12,8 @@
 	<dict>
 		<key>B82F0BE053F9362598FC0B3C159F99977BBC451A</key>
 		<string>https://github.com/lukaszmargielewski/LMGCDTimer.git</string>
+		<key>D2885296440547CB23891301E79B480A22EAC5F6</key>
+		<string>https://github.com/lukaszmargielewski/KSCrash.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>LMGCDTimerSample.xcodeproj</string>
@@ -19,6 +21,8 @@
 	<dict>
 		<key>B82F0BE053F9362598FC0B3C159F99977BBC451A</key>
 		<string>../..</string>
+		<key>D2885296440547CB23891301E79B480A22EAC5F6</key>
+		<string>../../KSCrash/</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/lukaszmargielewski/LMGCDTimer.git</string>
@@ -28,6 +32,14 @@
 	<string>B82F0BE053F9362598FC0B3C159F99977BBC451A</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D2885296440547CB23891301E79B480A22EAC5F6</string>
+			<key>IDESourceControlWCCName</key>
+			<string>KSCrash</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>

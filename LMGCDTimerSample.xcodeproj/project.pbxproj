@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		805CA9D91AEA7B76005D433E /* libKSCrashLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 805CA9D41AEA7B67005D433E /* libKSCrashLib.a */; };
 		80C22DE21A48376100001340 /* KSBacktrace.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DD41A48376100001340 /* KSBacktrace.c */; };
 		80C22DE31A48376100001340 /* KSDynamicLinker.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DD71A48376100001340 /* KSDynamicLinker.c */; };
 		80C22DE41A48376100001340 /* KSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDA1A48376100001340 /* KSLogger.m */; };
@@ -26,7 +27,39 @@
 		A1C7FC4B1A474E720098356E /* LMGCDWatchdog.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC491A474E720098356E /* LMGCDWatchdog.mm */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		805CA9D11AEA7B67005D433E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 805CA9CB1AEA7B67005D433E /* KSCrash-iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CB6D12FE17EB743A00BC2C04;
+			remoteInfo = KSCrash;
+		};
+		805CA9D31AEA7B67005D433E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 805CA9CB1AEA7B67005D433E /* KSCrash-iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CB6D132617EB749A00BC2C04;
+			remoteInfo = KSCrashLib;
+		};
+		805CA9D51AEA7B67005D433E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 805CA9CB1AEA7B67005D433E /* KSCrash-iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CB6D133317EB749A00BC2C04;
+			remoteInfo = KSCrashTests;
+		};
+		805CA9D71AEA7B6F005D433E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 805CA9CB1AEA7B67005D433E /* KSCrash-iOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CB6D12FD17EB743A00BC2C04;
+			remoteInfo = KSCrash;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		805CA9CB1AEA7B67005D433E /* KSCrash-iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "KSCrash-iOS.xcodeproj"; path = "KSCrash/iOS/KSCrash-iOS.xcodeproj"; sourceTree = "<group>"; };
 		80C22DD31A48376100001340 /* KSArchSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSArchSpecific.h; sourceTree = "<group>"; };
 		80C22DD41A48376100001340 /* KSBacktrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSBacktrace.c; sourceTree = "<group>"; };
 		80C22DD51A48376100001340 /* KSBacktrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSBacktrace.h; sourceTree = "<group>"; };
@@ -65,12 +98,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				805CA9D91AEA7B76005D433E /* libKSCrashLib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		805CA9CC1AEA7B67005D433E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				805CA9D21AEA7B67005D433E /* KSCrash.framework */,
+				805CA9D41AEA7B67005D433E /* libKSCrashLib.a */,
+				805CA9D61AEA7B67005D433E /* KSCrashTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		80C22DD21A48376100001340 /* Backtrace */ = {
 			isa = PBXGroup;
 			children = (
@@ -96,6 +140,7 @@
 		A1C7FBEA1A4701AF0098356E = {
 			isa = PBXGroup;
 			children = (
+				805CA9CB1AEA7B67005D433E /* KSCrash-iOS.xcodeproj */,
 				A1C7FC2B1A474ABC0098356E /* LMGCDTimer */,
 				A1C7FBF41A4701AF0098356E /* Products */,
 				AC836CD93D857B19055761E6 /* Frameworks */,
@@ -162,6 +207,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				805CA9D81AEA7B6F005D433E /* PBXTargetDependency */,
 			);
 			name = LMGCDTimerSample;
 			productName = Deadlocketector;
@@ -206,12 +252,42 @@
 			mainGroup = A1C7FBEA1A4701AF0098356E;
 			productRefGroup = A1C7FBF41A4701AF0098356E /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 805CA9CC1AEA7B67005D433E /* Products */;
+					ProjectRef = 805CA9CB1AEA7B67005D433E /* KSCrash-iOS.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				A1C7FBF21A4701AF0098356E /* LMGCDTimerSample */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		805CA9D21AEA7B67005D433E /* KSCrash.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = KSCrash.framework;
+			remoteRef = 805CA9D11AEA7B67005D433E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		805CA9D41AEA7B67005D433E /* libKSCrashLib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libKSCrashLib.a;
+			remoteRef = 805CA9D31AEA7B67005D433E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		805CA9D61AEA7B67005D433E /* KSCrashTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = KSCrashTests.xctest;
+			remoteRef = 805CA9D51AEA7B67005D433E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A1C7FBF11A4701AF0098356E /* Resources */ = {
@@ -249,6 +325,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		805CA9D81AEA7B6F005D433E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = KSCrash;
+			targetProxy = 805CA9D71AEA7B6F005D433E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		A1C7FC331A474ABC0098356E /* LaunchScreen.xib */ = {
@@ -361,6 +445,8 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DIR)/openlierox/util",
 					"$(PROJECT_DIR)/openlierox/include",
+					"$(PROJECT_DIR)/openlierox/include",
+					"$(PROJECT_DIR)/KSCrash/Source/KSCrash/**",
 				);
 				INFOPLIST_FILE = LMGCDTimer/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -390,6 +476,8 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DIR)/openlierox/util",
 					"$(PROJECT_DIR)/openlierox/include",
+					"$(PROJECT_DIR)/openlierox/include",
+					"$(PROJECT_DIR)/KSCrash/Source/KSCrash/**",
 				);
 				INFOPLIST_FILE = LMGCDTimer/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
