@@ -42,7 +42,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     [LMGCDWatchdog singleton].delegate = self;
     
-    //[self startTimers];
+    [self startTimers];
     [LMMmapLog log:"log test with: %s", "tst 1"];
 }
 
@@ -53,20 +53,14 @@
     
     timer_low_count = timer_back_count = timer_def_count = timer_high_count = 0;
     
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(update:) userInfo:nil repeats:YES];
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(update:) userInfo:nil repeats:YES];
     
     [timerLow invalidate];
-    timerLow = [LMGCDTimer timerWithInterval:0.05 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0) block:^{
+    timerLow = [LMGCDTimer timerWithInterval:0.1 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0) block:^{
         
         
         timer_low_count++;
-        
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            
-            self.timerLabelLow.text = [NSString stringWithFormat:@"%llu", timer_low_count];
-        });
-        
-        
+    
     }];
     
     [timerDef invalidate];
@@ -74,39 +68,19 @@
         
         timer_def_count++;
         
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            
-            self.timerLabelDef.text = [NSString stringWithFormat:@"%llu", timer_def_count];
-        });
-        
-        
     }];
     
     [timerBack invalidate];
-    timerBack = [LMGCDTimer timerWithInterval:0.15 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0) block:^{
+    timerBack = [LMGCDTimer timerWithInterval:0.1 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0) block:^{
         
         timer_back_count++;
-        
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            
-            self.timerLabelBack.text = [NSString stringWithFormat:@"%llu", timer_back_count];
-        });
-        
-        
         
     }];
     
     [timerHigh invalidate];
-    timerHigh = [LMGCDTimer timerWithInterval:0.2 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0) block:^{
+    timerHigh = [LMGCDTimer timerWithInterval:0.1 duration:0 leeway:0 repeat:YES startImmidiately:YES queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0) block:^{
         
         timer_high_count++;
-        
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            
-            self.timerLabelHigh.text = [NSString stringWithFormat:@"%llu", timer_high_count];
-        });
-        
-        
         
     }];
 
@@ -117,9 +91,16 @@
 }
 -(void)update:(NSTimer *)timer{
     
-    float perc = [[LMGCDWatchdog singleton] cpuInfo];
-    NSString *percText = [NSString stringWithFormat:@"%.1f", perc];
-    self.cpuPercentLabel.text = percText;
+    @synchronized(self){
+    
+        float perc = [[LMGCDWatchdog singleton] cpuInfo];
+        NSString *percText = [NSString stringWithFormat:@"%.1f", perc];
+        self.cpuPercentLabel.text = percText;
+        self.timerLabelBack.text = [NSString stringWithFormat:@"%llu", timer_back_count];
+        self.timerLabelDef.text = [NSString stringWithFormat:@"%llu", timer_def_count];
+        self.timerLabelHigh.text = [NSString stringWithFormat:@"%llu", timer_high_count];
+        self.timerLabelLow.text = [NSString stringWithFormat:@"%llu", timer_low_count];
+    }
     
 }
 

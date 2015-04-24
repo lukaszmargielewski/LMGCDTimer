@@ -20,9 +20,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    [[LMGCDWatchdog singleton] startWatchDog];
-    
-    NSArray *fb = [[LMGCDWatchdog singleton] getOldLogFiles];
     return YES;
 }
 
