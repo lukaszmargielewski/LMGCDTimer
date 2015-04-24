@@ -709,8 +709,6 @@ typedef struct BacktraceStruct{
                     break;
             }
             
-            char queue_name[100];
-            char thread_name[100];
             
             //bool qn = ksmach_getThreadQueueName(thread, queue_name, 100);
             //bool tn = ksmach_getThreadName(thread, thread_name, 100);

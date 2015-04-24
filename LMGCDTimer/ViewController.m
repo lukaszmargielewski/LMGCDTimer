@@ -131,6 +131,9 @@
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration{
 
     NSLog(@"!!! deadlock finished with duration: %.2f sec", duration);
+    NSString *lastLogFilePath = [watchdog getAllLogFilesSorted][0];
+    NSString *lastLogContent = [NSString stringWithContentsOfFile:lastLogFilePath encoding:NSUTF8StringEncoding error:nil];
+    NSLog(@"Last log (or first?):\n%@", lastLogContent);
 }
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog didDetectThreadStateChange:(NSString *)threadStateChangeInfo{
 

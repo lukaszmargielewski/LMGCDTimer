@@ -303,7 +303,7 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     [[LMMmapLog singleton] log:format];
 }
 
--(void)log:(char *) text{
+-(void)log:( const char *) text{
 
     
     text = "Decimals: %d %ld\n", 1977, 650000L;

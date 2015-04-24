@@ -8,14 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		805CA9D91AEA7B76005D433E /* libKSCrashLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 805CA9D41AEA7B67005D433E /* libKSCrashLib.a */; };
-		80C22DE21A48376100001340 /* KSBacktrace.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DD41A48376100001340 /* KSBacktrace.c */; };
-		80C22DE31A48376100001340 /* KSDynamicLinker.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DD71A48376100001340 /* KSDynamicLinker.c */; };
-		80C22DE41A48376100001340 /* KSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDA1A48376100001340 /* KSLogger.m */; };
-		80C22DE51A48376100001340 /* KSMach.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDB1A48376100001340 /* KSMach.c */; };
-		80C22DE61A48376100001340 /* KSMach_Arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDD1A48376100001340 /* KSMach_Arm.c */; };
-		80C22DE71A48376100001340 /* KSMach_Arm64.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDE1A48376100001340 /* KSMach_Arm64.c */; };
-		80C22DE81A48376100001340 /* KSMach_x86_32.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DDF1A48376100001340 /* KSMach_x86_32.c */; };
-		80C22DE91A48376100001340 /* KSMach_x86_64.c in Sources */ = {isa = PBXBuildFile; fileRef = 80C22DE01A48376100001340 /* KSMach_x86_64.c */; };
 		A12B7CB91A7114BD002ED49B /* LMMmapLog.m in Sources */ = {isa = PBXBuildFile; fileRef = A12B7CB81A7114BD002ED49B /* LMMmapLog.m */; };
 		A1C7FC3C1A474ABC0098356E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C7FC2D1A474ABC0098356E /* AppDelegate.m */; };
 		A1C7FC3F1A474ABC0098356E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1C7FC331A474ABC0098356E /* LaunchScreen.xib */; };
@@ -60,21 +52,6 @@
 
 /* Begin PBXFileReference section */
 		805CA9CB1AEA7B67005D433E /* KSCrash-iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "KSCrash-iOS.xcodeproj"; path = "KSCrash/iOS/KSCrash-iOS.xcodeproj"; sourceTree = "<group>"; };
-		80C22DD31A48376100001340 /* KSArchSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSArchSpecific.h; sourceTree = "<group>"; };
-		80C22DD41A48376100001340 /* KSBacktrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSBacktrace.c; sourceTree = "<group>"; };
-		80C22DD51A48376100001340 /* KSBacktrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSBacktrace.h; sourceTree = "<group>"; };
-		80C22DD61A48376100001340 /* KSBacktrace_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSBacktrace_Private.h; sourceTree = "<group>"; };
-		80C22DD71A48376100001340 /* KSDynamicLinker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSDynamicLinker.c; sourceTree = "<group>"; };
-		80C22DD81A48376100001340 /* KSDynamicLinker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSDynamicLinker.h; sourceTree = "<group>"; };
-		80C22DD91A48376100001340 /* KSLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSLogger.h; sourceTree = "<group>"; };
-		80C22DDA1A48376100001340 /* KSLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSLogger.m; sourceTree = "<group>"; };
-		80C22DDB1A48376100001340 /* KSMach.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach.c; sourceTree = "<group>"; };
-		80C22DDC1A48376100001340 /* KSMach.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMach.h; sourceTree = "<group>"; };
-		80C22DDD1A48376100001340 /* KSMach_Arm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_Arm.c; sourceTree = "<group>"; };
-		80C22DDE1A48376100001340 /* KSMach_Arm64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_Arm64.c; sourceTree = "<group>"; };
-		80C22DDF1A48376100001340 /* KSMach_x86_32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_32.c; sourceTree = "<group>"; };
-		80C22DE01A48376100001340 /* KSMach_x86_64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = KSMach_x86_64.c; sourceTree = "<group>"; };
-		80C22DE11A48376100001340 /* KSMachApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMachApple.h; sourceTree = "<group>"; };
 		A12B7CB71A7114BD002ED49B /* LMMmapLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMMmapLog.h; sourceTree = "<group>"; };
 		A12B7CB81A7114BD002ED49B /* LMMmapLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMmapLog.m; sourceTree = "<group>"; };
 		A1C7FBF31A4701AF0098356E /* LMGCDTimerSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LMGCDTimerSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,28 +92,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		80C22DD21A48376100001340 /* Backtrace */ = {
-			isa = PBXGroup;
-			children = (
-				80C22DD31A48376100001340 /* KSArchSpecific.h */,
-				80C22DD41A48376100001340 /* KSBacktrace.c */,
-				80C22DD51A48376100001340 /* KSBacktrace.h */,
-				80C22DD61A48376100001340 /* KSBacktrace_Private.h */,
-				80C22DD71A48376100001340 /* KSDynamicLinker.c */,
-				80C22DD81A48376100001340 /* KSDynamicLinker.h */,
-				80C22DD91A48376100001340 /* KSLogger.h */,
-				80C22DDA1A48376100001340 /* KSLogger.m */,
-				80C22DDB1A48376100001340 /* KSMach.c */,
-				80C22DDC1A48376100001340 /* KSMach.h */,
-				80C22DDD1A48376100001340 /* KSMach_Arm.c */,
-				80C22DDE1A48376100001340 /* KSMach_Arm64.c */,
-				80C22DDF1A48376100001340 /* KSMach_x86_32.c */,
-				80C22DE01A48376100001340 /* KSMach_x86_64.c */,
-				80C22DE11A48376100001340 /* KSMachApple.h */,
-			);
-			path = Backtrace;
-			sourceTree = "<group>";
-		};
 		A1C7FBEA1A4701AF0098356E = {
 			isa = PBXGroup;
 			children = (
@@ -175,7 +130,6 @@
 		A1C7FC451A474E720098356E /* LMGCDTimer */ = {
 			isa = PBXGroup;
 			children = (
-				80C22DD21A48376100001340 /* Backtrace */,
 				A1C7FC461A474E720098356E /* LMGCDTimer.h */,
 				A1C7FC471A474E720098356E /* LMGCDTimer.m */,
 				A12B7CB71A7114BD002ED49B /* LMMmapLog.h */,
@@ -308,18 +262,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1C7FC3C1A474ABC0098356E /* AppDelegate.m in Sources */,
-				80C22DE61A48376100001340 /* KSMach_Arm.c in Sources */,
 				A1C7FC431A474ABC0098356E /* main.m in Sources */,
 				A1C7FC441A474ABC0098356E /* ViewController.m in Sources */,
 				A12B7CB91A7114BD002ED49B /* LMMmapLog.m in Sources */,
-				80C22DE41A48376100001340 /* KSLogger.m in Sources */,
-				80C22DE51A48376100001340 /* KSMach.c in Sources */,
-				80C22DE91A48376100001340 /* KSMach_x86_64.c in Sources */,
-				80C22DE31A48376100001340 /* KSDynamicLinker.c in Sources */,
 				A1C7FC4B1A474E720098356E /* LMGCDWatchdog.mm in Sources */,
-				80C22DE81A48376100001340 /* KSMach_x86_32.c in Sources */,
-				80C22DE21A48376100001340 /* KSBacktrace.c in Sources */,
-				80C22DE71A48376100001340 /* KSMach_Arm64.c in Sources */,
 				A1C7FC4A1A474E720098356E /* LMGCDTimer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -437,25 +383,17 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Volumes/Data/Xcode_projects/MI/iPhone/Library/Frameworks,
 					"$(PROJECT_DIR)",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/openlierox/util",
-					"$(PROJECT_DIR)/openlierox/include",
-					"$(PROJECT_DIR)/openlierox/include",
 					"$(PROJECT_DIR)/KSCrash/Source/KSCrash/**",
 				);
 				INFOPLIST_FILE = LMGCDTimer/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/openlierox/tools/FontGenerator/build/msvc/lib",
-					"$(PROJECT_DIR)/openlierox/build/DevCpp/libs",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = LMGCDTimerSample;
 			};
 			name = Debug;
@@ -468,25 +406,17 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Volumes/Data/Xcode_projects/MI/iPhone/Library/Frameworks,
 					"$(PROJECT_DIR)",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/openlierox/util",
-					"$(PROJECT_DIR)/openlierox/include",
-					"$(PROJECT_DIR)/openlierox/include",
 					"$(PROJECT_DIR)/KSCrash/Source/KSCrash/**",
 				);
 				INFOPLIST_FILE = LMGCDTimer/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/openlierox/tools/FontGenerator/build/msvc/lib",
-					"$(PROJECT_DIR)/openlierox/build/DevCpp/libs",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = LMGCDTimerSample;
 			};
 			name = Release;
