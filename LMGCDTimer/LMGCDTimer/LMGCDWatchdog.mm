@@ -22,7 +22,21 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#import "KSCrash.h"
+
+#import <KSCrash/KSCrashAdvanced.h>
+#import <KSCrash/KSCrashReportFilterSets.h>
+#import <KSCrash/KSCrashReportFilter.h>
+#import <KSCrash/KSCrashReportFilterAppleFmt.h>
+#import <KSCrash/KSCrashReportFilterBasic.h>
+#import <KSCrash/KSCrashReportFilterGZip.h>
+#import <KSCrash/KSCrashReportFilterJSON.h>
+#import <KSCrash/KSCrashReportSinkConsole.h>
+#import <KSCrash/KSCrashReportSinkEMail.h>
+#import <KSCrash/KSCrashReportSinkQuincyHockey.h>
+#import <KSCrash/KSCrashReportSinkStandard.h>
+#import <KSCrash/KSCrashReportSinkVictory.h>
+
+
 ///*
 #import "KSMach.h"
 #import "KSBacktrace.h"
@@ -113,6 +127,9 @@ typedef struct BacktraceStruct{
     
     NSMutableArray *_asyncBlocks;
     NSMutableArray *_syncBlocks;
+    
+    KSCrash* crashReporter;
+    
     
 }
 @synthesize queue = _queue;
@@ -258,6 +275,37 @@ typedef struct BacktraceStruct{
     return self;
 }
 
+- (void) installCrashHandler
+{
+    crashReporter = [KSCrash sharedInstance];
+    
+    crashReporter.zombieCacheSize = 16384;
+    crashReporter.searchThreadNames = YES;
+    crashReporter.searchQueueNames = YES;
+    //handler.printTraceToStdout = YES;
+    crashReporter.userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                        @"\"quote\"", @"quoted value",
+                        @"blah", @"\"quoted\" key",
+                        @"bslash\\", @"bslash value",
+                        @"x", @"bslash\\key",
+                        @"intl", @"テスト",
+                        nil];
+    
+    // Don't delete after send for this demo.
+    crashReporter.deleteBehaviorAfterSendAll = KSCDeleteNever;
+    [crashReporter install];
+    
+    crashReporter.deadlockWatchdogInterval = .1f;
+    /*
+    KSCrashReportFilterAppleFmt *appleFilter    = [KSCrashReportFilterAppleFmt filterWithReportStyle:KSAppleReportStyleSymbolicated];
+    KSCrashReportSinkConsole *console           =[KSCrashReportSinkConsole filter];
+    KSCrashReportFilterPipeline *pipeline       = [KSCrashReportFilterPipeline filterWithFilters:appleFilter, console,nil];
+    
+    crashReporter.sink = pipeline;
+    
+    */
+}
+
 
 #pragma mark - Watchdog:
 
@@ -265,6 +313,8 @@ typedef struct BacktraceStruct{
 
     
     if(_watchdogBackgoundTimer.running)return;
+    
+    [self installCrashHandler];
     
     if (!_logFilePath) {
         [self createLogFile];
@@ -327,7 +377,7 @@ typedef struct BacktraceStruct{
             _deadlock = YES;
             [self ksCrashThreadInfo];
             //[self threadsInfo];
-            [self cpuInfo];
+            //[self cpuInfo];
             
             [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self cpuUsagePercent:_cpuUsagePercent];
             
@@ -341,6 +391,10 @@ typedef struct BacktraceStruct{
 
 #pragma mark - Info methods:
 -(void)ksCrashThreadInfo{
+    
+    [[KSCrash sharedInstance] reportUserException:@"Deadlock" reason:@"main thread deadlocked" lineOfCode:@"--- no line of code provided" stackTrace:nil terminateProgram:NO];
+
+    [crashReporter sendAllReportsWithCompletion:nil];
 
 }
 -(float)cpuInfo{
