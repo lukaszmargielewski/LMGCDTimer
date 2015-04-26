@@ -121,6 +121,8 @@ typedef struct BacktraceStruct{
     
     KSCrash* crashReporter;
     
+    mach_msg_type_number_t _thread_count_prev;
+    mach_msg_type_number_t _thread_count_mark;
     
 }
 @synthesize queue = _queue;
@@ -260,6 +262,8 @@ typedef struct BacktraceStruct{
         _dateFormatter2.dateFormat = @"yyyy_MM_dd_HH-mm-ss";
         
         _creationDate           = [NSDate date];
+        _monitorThreadChangesAboveThreadCount = 0;
+        
         [self createQueue];
         
     }
@@ -301,14 +305,17 @@ typedef struct BacktraceStruct{
 
 #pragma mark - Watchdog:
 
--(void)startWatchDog{
+-(void)startWatchDogWithTimeInterval:(NSTimeInterval)timeInterval{
 
     
     if(_watchdogBackgoundTimer.running)return;
     
     [self installCrashHandler];
+    _thread_count_prev = _thread_count_mark = 0;
     
-    [NSNotificationCenter defaulCenter]
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+    
     if (!_logFilePath) {
         [self createLogFile];
     }
@@ -321,7 +328,7 @@ typedef struct BacktraceStruct{
                 [self createWatchdogQueue];
             }
             
-            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:.5 duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
+            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:timeInterval duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
                 
                 [weakSelf watchdogOperation];
                 
@@ -330,7 +337,7 @@ typedef struct BacktraceStruct{
             _watchdogBackgoundTimer.name = @"watchdog";
         }else{
             
-            _watchdogBackgoundTimer.interval = .5;
+            _watchdogBackgoundTimer.interval = timeInterval;
             [_watchdogBackgoundTimer resume];
         }
     
@@ -346,21 +353,45 @@ typedef struct BacktraceStruct{
 #pragma mark - Private:
 -(void)sendAllreportsToQuincyKit{
     
-    [crashReporter sendAllReportsWithCompletion:^(NSArray* filteredReports, BOOL completed, NSError* error)
+    __block KSCrash *blockCR = crashReporter;
+    
+    [blockCR sendAllReportsWithCompletion:^(NSArray* filteredReports, BOOL completed, NSError* error)
      {
+         if (filteredReports.count == 0) {
+             return;
+         }
+         
+         NSString *message;
+         NSString *title;
          if(completed)
          {
-             [[KSCrash sharedInstance] deleteAllReports];
+             [blockCR deleteAllReports];
+             title = [NSString stringWithFormat:@"Success (%lu)", (unsigned long)filteredReports.count];
+             message = [NSString stringWithFormat:@"Successfully sent %lu crash / deadlock reports", (unsigned long)filteredReports.count];
+             
          }
          else
          {
              NSLog(@"Failed to send reports: %@", error);
+             title = [NSString stringWithFormat:@"Failed (%lu)", (unsigned long)filteredReports.count];
+             message = [NSString stringWithFormat:@"Failed to send reports %lu: %@\nerror: %@", (unsigned long)filteredReports.count, error];
+             
+
+             
          }
          
+         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+         [alertView show];
          
      }];
     
 }
+-(void)didEnterForeground:(NSNotification *)notification{
+
+    [self sendAllreportsToQuincyKit];
+}
+
+
 -(void)watchdogOperation{
     
     
@@ -380,7 +411,20 @@ typedef struct BacktraceStruct{
                 NSTimeInterval seconds = timeIntervalFromMach(tNow - _time_start);
                 
                 [_delegate LMGCDWatchdog:self deadlockDidFinishWithduration:seconds];
+            
             }
+            
+            if (_monitorThreadChangesAboveThreadCount) {
+            
+                [self threadsCountChange];
+            }
+            
+            _deadlock = NO;
+#ifdef DEBUG
+            uint64_t tNow = mach_absolute_time();
+            printf("\n watchOperation:                     : %f sec (%llu)" , timeIntervalFromMach(tNow - _time_start), tNow - _time_start);
+#endif
+            
         });
 
     }else{
@@ -663,7 +707,7 @@ typedef struct BacktraceStruct{
     
     uint64_t te = mach_absolute_time();
     
-    printf("\n analytics sec: %f (%llu)" , timeIntervalFromMach(te - ts), te - ts);
+    printf("\n analytics: %f sec (%llu)" , timeIntervalFromMach(te - ts), te - ts);
     return NO;
 }
 -(BOOL)threadsAnalyticsSimple{
@@ -707,21 +751,21 @@ typedef struct BacktraceStruct{
         integer_t run_state = basic_info_th->run_state;
         
         /*
-        
-        arm_unified_thread_state state;
-        mach_msg_type_number_t state_count = ARM_UNIFIED_THREAD_STATE_COUNT;
-        kr = thread_get_state(thread, ARM_UNIFIED_THREAD_STATE, (thread_state_t) &state, &state_count);
-
-        */
+         
+         arm_unified_thread_state state;
+         mach_msg_type_number_t state_count = ARM_UNIFIED_THREAD_STATE_COUNT;
+         kr = thread_get_state(thread, ARM_UNIFIED_THREAD_STATE, (thread_state_t) &state, &state_count);
+         
+         */
         /*
-        STRUCT_MCONTEXT_L machineContext;
+         STRUCT_MCONTEXT_L machineContext;
+         
+         if(!ksmach_threadState(thread, &machineContext))
+         {
+         return 0;
+         }
+         */
         
-        if(!ksmach_threadState(thread, &machineContext))
-        {
-            return 0;
-        }
-        */
-
         if (run_state != _threadsStates[thread]) {
             
             char const *sss;
@@ -736,7 +780,7 @@ typedef struct BacktraceStruct{
                     break;
                 case TH_STATE_STOPPED:
                 {
-                
+                    
                     sss = "stopped";
                     pref = "--- < ";
                 }
@@ -744,10 +788,10 @@ typedef struct BacktraceStruct{
                     break;
                 case TH_STATE_WAITING:
                 {
-                
+                    
                     sss = "waiting";
                     pref = "--- < ";
-                
+                    
                 }
                     //printf("\nthread %u is TH_STATE_WAITING", thread);
                     break;
@@ -775,7 +819,7 @@ typedef struct BacktraceStruct{
             
             NSString *aaa = [NSString stringWithFormat:@" %s thread %u (name: %s) (queue: %s) is %s | threads: %i", pref, thread, thread_name, queue_name, sss, thread_count];
             
-        
+            
             //printf("\n --- thread %u (name: %s) (queue: %s) is %s", thread, thread_name, queue_name, sss);
             [_delegate LMGCDWatchdog:self didDetectThreadStateChange:aaa];
         }
@@ -797,6 +841,41 @@ typedef struct BacktraceStruct{
     uint64_t te = mach_absolute_time();
     
     //printf("\n analytics sec: %f (%llu)\n\n" , timeIntervalFromMach(te - ts), te - ts);
+    return NO;
+}
+
+-(BOOL)threadsCountChange{
+    
+    /* Threads */
+    
+    uint64_t ts     = mach_absolute_time();
+    const task_t    this_task = mach_task_self();
+    const thread_t  this_thread = mach_thread_self();
+    
+    kern_return_t kr;
+    
+    thread_act_array_t threads;
+    mach_msg_type_number_t thread_count;
+    
+    kr = task_threads(this_task, &threads, &thread_count);
+    
+    
+    // 1. Get a list of all threads:
+    
+    if (kr != KERN_SUCCESS) {
+        printf("error getting threads: %s", mach_error_string(kr));
+        return NO;
+    }
+    
+    mach_port_deallocate(this_task, this_thread);
+    vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
+    
+#ifdef DEBUG
+    uint64_t te = mach_absolute_time();
+    printf("\nthread count: %i  (prev: %i), analytics: %f sec (%llu)" , thread_count, _thread_count_prev, timeIntervalFromMach(te - ts), te - ts);
+#endif
+    
+    _thread_count_prev = thread_count;
     return NO;
 }
 

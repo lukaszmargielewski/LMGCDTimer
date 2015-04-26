@@ -112,7 +112,7 @@
 }
 -(IBAction)startWatchdog:(id)sender{
     
-    [[LMGCDWatchdog singleton] startWatchDog];
+    [[LMGCDWatchdog singleton] startWatchDogWithTimeInterval:0.5];
 }
 
 -(IBAction)scheduleDeadlock:(id)sender{
@@ -128,7 +128,6 @@
 
 -(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog cpuUsagePercent:(float)cpuUsagePercent{
 
-
     
     NSLog(@"!!! longer deadlock with cpu usage: %.2f%%", cpuUsagePercent);
     [[KSCrash sharedInstance] sendAllReportsWithCompletion:nil];
@@ -138,16 +137,6 @@
 
     
     NSLog(@"!!! deadlock finished with duration: %.2f sec", duration);
-    
-    /*
-    NSString *lastLogFilePath = [watchdog getAllLogFilesSorted][0];
-    NSString *lastLogContent = [NSString stringWithContentsOfFile:lastLogFilePath encoding:NSUTF8StringEncoding error:nil];
-    NSLog(@"Last log (or first?):\n%@", lastLogContent);
-     */
-    
-    NSArray *allReports = [[KSCrash sharedInstance] allReports];
-    
-    NSLog(@"All reports: %i\n%@", allReports.count, allReports);
     
     
 }

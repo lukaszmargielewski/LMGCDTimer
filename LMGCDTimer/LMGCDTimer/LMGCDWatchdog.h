@@ -46,13 +46,14 @@ typedef void(^VoidBlock)();
 @interface LMGCDWatchdog : NSObject
 @property (nonatomic, readonly) dispatch_queue_t queue;
 @property (nonatomic, assign) id<LMGCDWatchdogDelegate>delegate;
+@property (nonatomic) int monitorThreadChangesAboveThreadCount;
 
 +(instancetype)singleton;
 
 #pragma mark - Watchdog:
 
 -(void)stopWatchDog;
--(void)startWatchDog;
+-(void)startWatchDogWithTimeInterval:(NSTimeInterval)timeInterval;
 
 -(float)cpuInfo;
 
