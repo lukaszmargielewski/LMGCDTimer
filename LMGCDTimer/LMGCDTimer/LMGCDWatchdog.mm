@@ -288,7 +288,7 @@ typedef struct BacktraceStruct{
     
     // Don't delete after send for this demo.
     crashReporter.deleteBehaviorAfterSendAll = KSCDeleteOnSucess;
-    
+    crashReporter.handlingCrashTypes = KSCrashTypeUserReported;
     crashReporter.sink = [[KSCrashReportSinkQuincy sinkWithURL:kQuincyReportURL
                                                      userIDKey:nil
                                                    userNameKey:nil
