@@ -35,6 +35,7 @@
 #import <KSCrash/KSCrashReportSinkQuincyHockey.h>
 #import <KSCrash/KSCrashReportSinkStandard.h>
 #import <KSCrash/KSCrashReportSinkVictory.h>
+#import "CrashTesterCommands.h"
 
 
 ///*
@@ -295,15 +296,15 @@ typedef struct BacktraceStruct{
     crashReporter.deleteBehaviorAfterSendAll = KSCDeleteNever;
     [crashReporter install];
     
-    crashReporter.deadlockWatchdogInterval = .1f;
-    /*
-    KSCrashReportFilterAppleFmt *appleFilter    = [KSCrashReportFilterAppleFmt filterWithReportStyle:KSAppleReportStyleSymbolicated];
+   // crashReporter.deadlockWatchdogInterval = .1f;
+    ///*
+    KSCrashReportFilterAppleFmt *appleFilter    = [KSCrashReportFilterAppleFmt filterWithReportStyle:KSAppleReportStyleSymbolicatedSideBySide];
     KSCrashReportSinkConsole *console           =[KSCrashReportSinkConsole filter];
     KSCrashReportFilterPipeline *pipeline       = [KSCrashReportFilterPipeline filterWithFilters:appleFilter, console,nil];
     
     crashReporter.sink = pipeline;
     
-    */
+    //*/
 }
 
 
@@ -367,6 +368,23 @@ typedef struct BacktraceStruct{
                 _deadlock = NO;                
                 NSTimeInterval seconds = timeIntervalFromMach(tNow - _time_start);
                 
+                [CrashTesterCommands sendToQuincyWithCompletion:^(NSArray* filteredReports, BOOL completed, NSError* error)
+                 {
+                     if(completed)
+                     {
+                         [CrashTesterCommands showAlertWithTitle:@"Success" message:@"Sent %d reports", [filteredReports count]];
+                         [[KSCrash sharedInstance] deleteAllReports];
+                     }
+                     else
+                     {
+                         NSLog(@"Failed to send reports: %@", error);
+                         [CrashTesterCommands showAlertWithTitle:@"Failed" message:@"Failed to send reports", [error localizedDescription]];
+                     }
+
+                     
+                 }];
+
+                
                 [_delegate LMGCDWatchdog:self deadlockDidFinishWithduration:seconds];
             }
         });
@@ -375,7 +393,7 @@ typedef struct BacktraceStruct{
     
         if (!_deadlock) {
             _deadlock = YES;
-            [self ksCrashThreadInfo];
+             [[KSCrash sharedInstance] reportUserException:@"Deadlock" reason:@"main thread deadlocked" lineOfCode:@"--- no line of code provided" stackTrace:nil terminateProgram:NO];
             //[self threadsInfo];
             //[self cpuInfo];
             
@@ -390,13 +408,7 @@ typedef struct BacktraceStruct{
 
 
 #pragma mark - Info methods:
--(void)ksCrashThreadInfo{
-    
-    [[KSCrash sharedInstance] reportUserException:@"Deadlock" reason:@"main thread deadlocked" lineOfCode:@"--- no line of code provided" stackTrace:nil terminateProgram:NO];
 
-    [crashReporter sendAllReportsWithCompletion:nil];
-
-}
 -(float)cpuInfo{
     
     natural_t numCPUsU = 0U;

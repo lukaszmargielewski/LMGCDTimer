@@ -10,6 +10,8 @@
 #import "LMGCDWatchdog.h"
 #import "LMGCDTimer.h"
 #import "LMMmapLog.h"
+#import <KSCrash.h>
+#import <KSCrashAdvanced.h>
 
 @interface ViewController ()<LMGCDWatchdogDelegate>
 @property (nonatomic, strong) NSTimer *timer;
@@ -126,14 +128,28 @@
 
 -(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog cpuUsagePercent:(float)cpuUsagePercent{
 
+
+    
     NSLog(@"!!! longer deadlock with cpu usage: %.2f%%", cpuUsagePercent);
+    [[KSCrash sharedInstance] sendAllReportsWithCompletion:nil];
+    
 }
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration{
 
+    
     NSLog(@"!!! deadlock finished with duration: %.2f sec", duration);
+    
+    /*
     NSString *lastLogFilePath = [watchdog getAllLogFilesSorted][0];
     NSString *lastLogContent = [NSString stringWithContentsOfFile:lastLogFilePath encoding:NSUTF8StringEncoding error:nil];
     NSLog(@"Last log (or first?):\n%@", lastLogContent);
+     */
+    
+    NSArray *allReports = [[KSCrash sharedInstance] allReports];
+    
+    NSLog(@"All reports: %i\n%@", allReports.count, allReports);
+    
+    
 }
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog didDetectThreadStateChange:(NSString *)threadStateChangeInfo{
 

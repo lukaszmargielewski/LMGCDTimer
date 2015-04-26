@@ -54,7 +54,7 @@
 		A1F878A71AEC4FF00017FFB8 /* KSSignalInfo.c in Sources */ = {isa = PBXBuildFile; fileRef = A1F878491AEC4FEF0017FFB8 /* KSSignalInfo.c */; };
 		A1F878A81AEC4FF00017FFB8 /* KSString.c in Sources */ = {isa = PBXBuildFile; fileRef = A1F8784C1AEC4FEF0017FFB8 /* KSString.c */; };
 		A1F878A91AEC4FF00017FFB8 /* KSSysCtl.c in Sources */ = {isa = PBXBuildFile; fileRef = A1F8784E1AEC4FEF0017FFB8 /* KSSysCtl.c */; };
-		A1F878AA1AEC4FF00017FFB8 /* KSZombie.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F878511AEC4FEF0017FFB8 /* KSZombie.m */; };
+		A1F878AA1AEC4FF00017FFB8 /* KSZombie.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F878511AEC4FEF0017FFB8 /* KSZombie.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		A1F878AB1AEC4FF00017FFB8 /* NSDictionary+Merge.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F878531AEC4FF00017FFB8 /* NSDictionary+Merge.m */; };
 		A1F878AC1AEC4FF00017FFB8 /* NSError+SimpleConstructor.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F878551AEC4FF00017FFB8 /* NSError+SimpleConstructor.m */; };
 		A1F878AD1AEC4FF00017FFB8 /* RFC3339DateTool.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F878571AEC4FF00017FFB8 /* RFC3339DateTool.m */; };
@@ -84,6 +84,7 @@
 		A1F878CA1AEC50A30017FFB8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F878C91AEC50A30017FFB8 /* Foundation.framework */; };
 		A1F878CC1AEC50A90017FFB8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F878CB1AEC50A90017FFB8 /* CoreGraphics.framework */; };
 		A1F878CE1AEC50AF0017FFB8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F878CD1AEC50AF0017FFB8 /* UIKit.framework */; };
+		A1F878EA1AEC5F500017FFB8 /* CrashTesterCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F878E91AEC5F500017FFB8 /* CrashTesterCommands.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -243,6 +244,10 @@
 		A1F878CB1AEC50A90017FFB8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		A1F878CD1AEC50AF0017FFB8 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A1F878D01AEC524E0017FFB8 /* LMGCDTimerSample-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LMGCDTimerSample-Prefix.pch"; sourceTree = "<group>"; };
+		A1F878E61AEC5F500017FFB8 /* ARCSafe_MemMgmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARCSafe_MemMgmt.h; sourceTree = "<group>"; };
+		A1F878E71AEC5F500017FFB8 /* Configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Configuration.h; sourceTree = "<group>"; };
+		A1F878E81AEC5F500017FFB8 /* CrashTesterCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashTesterCommands.h; sourceTree = "<group>"; };
+		A1F878E91AEC5F500017FFB8 /* CrashTesterCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashTesterCommands.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,6 +271,7 @@
 		A1C7FBEA1A4701AF0098356E = {
 			isa = PBXGroup;
 			children = (
+				A1F878E51AEC5F500017FFB8 /* KSCrash-reporting */,
 				A1F878D01AEC524E0017FFB8 /* LMGCDTimerSample-Prefix.pch */,
 				A1F877F61AEC4FEF0017FFB8 /* KSCrash */,
 				A1C7FC2B1A474ABC0098356E /* LMGCDTimer */,
@@ -524,6 +530,17 @@
 			path = Tools;
 			sourceTree = "<group>";
 		};
+		A1F878E51AEC5F500017FFB8 /* KSCrash-reporting */ = {
+			isa = PBXGroup;
+			children = (
+				A1F878E61AEC5F500017FFB8 /* ARCSafe_MemMgmt.h */,
+				A1F878E71AEC5F500017FFB8 /* Configuration.h */,
+				A1F878E81AEC5F500017FFB8 /* CrashTesterCommands.h */,
+				A1F878E91AEC5F500017FFB8 /* CrashTesterCommands.m */,
+			);
+			path = "KSCrash-reporting";
+			sourceTree = "<group>";
+		};
 		AC836CD93D857B19055761E6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -667,6 +684,7 @@
 				A1F878981AEC4FF00017FFB8 /* Demangle.cpp in Sources */,
 				A1F8789F1AEC4FF00017FFB8 /* KSLogger.m in Sources */,
 				A1F878941AEC4FF00017FFB8 /* KSCrashSentry_MachException.c in Sources */,
+				A1F878EA1AEC5F500017FFB8 /* CrashTesterCommands.m in Sources */,
 				A1F878B81AEC4FF00017FFB8 /* KSCrashReportSinkEMail.m in Sources */,
 				A1F878951AEC4FF00017FFB8 /* KSCrashSentry_NSException.m in Sources */,
 				A1F878B61AEC4FF00017FFB8 /* NSData+GZip.m in Sources */,
