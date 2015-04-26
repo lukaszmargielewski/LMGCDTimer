@@ -25,7 +25,6 @@
 
 #import "KSCrash.h"
 #import "KSCrashAdvanced.h"
-#import "Configuration.h"
 
 
 ///*
@@ -40,7 +39,8 @@ using namespace std;
 
 #include <mach/mach_time.h>
 
-
+// Quincy configuration. Reconfigure to point to your Quincy app.
+#define kQuincyReportURL [NSURL URLWithString:@"http://dev.appledevelop.pl/quincykit/crash_v300.php"]
 #define kMaxFamesSupported 128
 #define kMaxThreadsSupported 30
 #define kMaxLogFileSizeInBytes 1 * 1024 * 1024

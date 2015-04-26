@@ -244,7 +244,6 @@
 		A1F878CD1AEC50AF0017FFB8 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A1F878D01AEC524E0017FFB8 /* LMGCDTimerSample-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LMGCDTimerSample-Prefix.pch"; sourceTree = "<group>"; };
 		A1F878E61AEC5F500017FFB8 /* ARCSafe_MemMgmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARCSafe_MemMgmt.h; sourceTree = "<group>"; };
-		A1F878E71AEC5F500017FFB8 /* Configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Configuration.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -531,7 +530,6 @@
 			isa = PBXGroup;
 			children = (
 				A1F878E61AEC5F500017FFB8 /* ARCSafe_MemMgmt.h */,
-				A1F878E71AEC5F500017FFB8 /* Configuration.h */,
 			);
 			path = "KSCrash-reporting";
 			sourceTree = "<group>";
@@ -814,7 +812,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/KSCrash/Source/KSCrash/**",
 				);
 				INFOPLIST_FILE = LMGCDTimer/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -839,7 +836,6 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/KSCrash/Source/KSCrash/**",
 				);
 				INFOPLIST_FILE = LMGCDTimer/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;

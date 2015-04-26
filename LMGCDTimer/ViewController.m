@@ -10,8 +10,8 @@
 #import "LMGCDWatchdog.h"
 #import "LMGCDTimer.h"
 #import "LMMmapLog.h"
-#import <KSCrash.h>
-#import <KSCrashAdvanced.h>
+#import "KSCrash.h"
+#import "KSCrashAdvanced.h"
 
 @interface ViewController ()<LMGCDWatchdogDelegate>
 @property (nonatomic, strong) NSTimer *timer;
@@ -128,9 +128,7 @@
 
 -(void)LMGCDWatchdogDidDetectLongerDeadlock:(LMGCDWatchdog *)watchdog cpuUsagePercent:(float)cpuUsagePercent{
 
-    
     NSLog(@"!!! longer deadlock with cpu usage: %.2f%%", cpuUsagePercent);
-    [[KSCrash sharedInstance] sendAllReportsWithCompletion:nil];
     
 }
 -(void)LMGCDWatchdog:(LMGCDWatchdog *)watchdog deadlockDidFinishWithduration:(double)duration{
