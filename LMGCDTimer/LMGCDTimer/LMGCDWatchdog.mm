@@ -23,26 +23,16 @@
 #include <unistd.h>
 
 
-#import <KSCrash/KSCrashAdvanced.h>
-#import <KSCrash/KSCrashReportFilterSets.h>
-#import <KSCrash/KSCrashReportFilter.h>
-#import <KSCrash/KSCrashReportFilterAppleFmt.h>
-#import <KSCrash/KSCrashReportFilterBasic.h>
-#import <KSCrash/KSCrashReportFilterGZip.h>
-#import <KSCrash/KSCrashReportFilterJSON.h>
-#import <KSCrash/KSCrashReportSinkConsole.h>
-#import <KSCrash/KSCrashReportSinkEMail.h>
-#import <KSCrash/KSCrashReportSinkQuincyHockey.h>
-#import <KSCrash/KSCrashReportSinkStandard.h>
-#import <KSCrash/KSCrashReportSinkVictory.h>
-#import "CrashTesterCommands.h"
+#import "KSCrash.h"
+#import "KSCrashAdvanced.h"
+#import "Configuration.h"
 
 
 ///*
 #import "KSMach.h"
 #import "KSBacktrace.h"
 #import "KSBacktrace_Private.h"
-//*/
+#import "KSCrashReportSinkQuincyHockey.h"
 #include <map>
 #include <utility>
 
@@ -293,16 +283,17 @@ typedef struct BacktraceStruct{
                         nil];
     
     // Don't delete after send for this demo.
-    crashReporter.deleteBehaviorAfterSendAll = KSCDeleteNever;
+    crashReporter.deleteBehaviorAfterSendAll = KSCDeleteOnSucess;
+    
+    crashReporter.sink = [[KSCrashReportSinkQuincy sinkWithURL:kQuincyReportURL
+                                                     userIDKey:nil
+                                                   userNameKey:nil
+                                               contactEmailKey:nil
+                                          crashDescriptionKeys:nil] defaultCrashReportFilterSet];
+
+    
     [crashReporter install];
     
-   // crashReporter.deadlockWatchdogInterval = .1f;
-    ///*
-    KSCrashReportFilterAppleFmt *appleFilter    = [KSCrashReportFilterAppleFmt filterWithReportStyle:KSAppleReportStyleSymbolicatedSideBySide];
-    KSCrashReportSinkConsole *console           =[KSCrashReportSinkConsole filter];
-    KSCrashReportFilterPipeline *pipeline       = [KSCrashReportFilterPipeline filterWithFilters:appleFilter, console,nil];
-    
-    crashReporter.sink = pipeline;
     
     //*/
 }
@@ -317,6 +308,7 @@ typedef struct BacktraceStruct{
     
     [self installCrashHandler];
     
+    [NSNotificationCenter defaulCenter]
     if (!_logFilePath) {
         [self createLogFile];
     }
@@ -341,15 +333,34 @@ typedef struct BacktraceStruct{
             _watchdogBackgoundTimer.interval = .5;
             [_watchdogBackgoundTimer resume];
         }
+    
+    [self sendAllreportsToQuincyKit];
 }
 -(void)stopWatchDog{
     
         [_watchdogBackgoundTimer pause];
+        [self sendAllreportsToQuincyKit];
     
 }
 
 #pragma mark - Private:
-
+-(void)sendAllreportsToQuincyKit{
+    
+    [crashReporter sendAllReportsWithCompletion:^(NSArray* filteredReports, BOOL completed, NSError* error)
+     {
+         if(completed)
+         {
+             [[KSCrash sharedInstance] deleteAllReports];
+         }
+         else
+         {
+             NSLog(@"Failed to send reports: %@", error);
+         }
+         
+         
+     }];
+    
+}
 -(void)watchdogOperation{
     
     
@@ -367,23 +378,6 @@ typedef struct BacktraceStruct{
                 uint64_t tNow = mach_absolute_time();
                 _deadlock = NO;                
                 NSTimeInterval seconds = timeIntervalFromMach(tNow - _time_start);
-                
-                [CrashTesterCommands sendToQuincyWithCompletion:^(NSArray* filteredReports, BOOL completed, NSError* error)
-                 {
-                     if(completed)
-                     {
-                         [CrashTesterCommands showAlertWithTitle:@"Success" message:@"Sent %d reports", [filteredReports count]];
-                         [[KSCrash sharedInstance] deleteAllReports];
-                     }
-                     else
-                     {
-                         NSLog(@"Failed to send reports: %@", error);
-                         [CrashTesterCommands showAlertWithTitle:@"Failed" message:@"Failed to send reports", [error localizedDescription]];
-                     }
-
-                     
-                 }];
-
                 
                 [_delegate LMGCDWatchdog:self deadlockDidFinishWithduration:seconds];
             }

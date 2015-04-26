@@ -84,7 +84,6 @@
 		A1F878CA1AEC50A30017FFB8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F878C91AEC50A30017FFB8 /* Foundation.framework */; };
 		A1F878CC1AEC50A90017FFB8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F878CB1AEC50A90017FFB8 /* CoreGraphics.framework */; };
 		A1F878CE1AEC50AF0017FFB8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1F878CD1AEC50AF0017FFB8 /* UIKit.framework */; };
-		A1F878EA1AEC5F500017FFB8 /* CrashTesterCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F878E91AEC5F500017FFB8 /* CrashTesterCommands.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -246,8 +245,6 @@
 		A1F878D01AEC524E0017FFB8 /* LMGCDTimerSample-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LMGCDTimerSample-Prefix.pch"; sourceTree = "<group>"; };
 		A1F878E61AEC5F500017FFB8 /* ARCSafe_MemMgmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARCSafe_MemMgmt.h; sourceTree = "<group>"; };
 		A1F878E71AEC5F500017FFB8 /* Configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Configuration.h; sourceTree = "<group>"; };
-		A1F878E81AEC5F500017FFB8 /* CrashTesterCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashTesterCommands.h; sourceTree = "<group>"; };
-		A1F878E91AEC5F500017FFB8 /* CrashTesterCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashTesterCommands.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -535,8 +532,6 @@
 			children = (
 				A1F878E61AEC5F500017FFB8 /* ARCSafe_MemMgmt.h */,
 				A1F878E71AEC5F500017FFB8 /* Configuration.h */,
-				A1F878E81AEC5F500017FFB8 /* CrashTesterCommands.h */,
-				A1F878E91AEC5F500017FFB8 /* CrashTesterCommands.m */,
 			);
 			path = "KSCrash-reporting";
 			sourceTree = "<group>";
@@ -684,7 +679,6 @@
 				A1F878981AEC4FF00017FFB8 /* Demangle.cpp in Sources */,
 				A1F8789F1AEC4FF00017FFB8 /* KSLogger.m in Sources */,
 				A1F878941AEC4FF00017FFB8 /* KSCrashSentry_MachException.c in Sources */,
-				A1F878EA1AEC5F500017FFB8 /* CrashTesterCommands.m in Sources */,
 				A1F878B81AEC4FF00017FFB8 /* KSCrashReportSinkEMail.m in Sources */,
 				A1F878951AEC4FF00017FFB8 /* KSCrashSentry_NSException.m in Sources */,
 				A1F878B61AEC4FF00017FFB8 /* NSData+GZip.m in Sources */,
