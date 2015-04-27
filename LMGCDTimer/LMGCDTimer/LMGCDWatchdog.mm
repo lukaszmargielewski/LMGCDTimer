@@ -45,6 +45,7 @@ using namespace std;
 #define kMaxThreadsSupported 30
 #define kMaxLogFileSizeInBytes 1 * 1024 * 1024
 
+#define DEBUG_PERFORMANCE 1
 
 static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
     
@@ -85,7 +86,14 @@ typedef struct BacktraceStruct{
     
     LMGCDTimer *_watchdogBackgoundTimer;
     
-    uint64_t _time_start;
+    uint64_t _potential_deadlock_time_start;
+
+    uint64_t _watchdog_operation_time_start;
+    uint64_t _watchdog_operation_time_start_prev;
+    
+    uint64_t _deadlock_operation_time_start_last;
+    uint64_t _threads_check_operation_time_start_last;
+    
     
     dispatch_queue_t _watchdog_queue;
     BOOL _waiting_in_main_queue;
@@ -123,8 +131,13 @@ typedef struct BacktraceStruct{
     mach_msg_type_number_t _thread_count_prev;
     mach_msg_type_number_t _thread_count_mark;
     
+    mach_msg_type_number_t _thread_waiting_count_prev;
+    mach_msg_type_number_t _thread_waititng_count_mark;
+    mach_msg_type_number_t _thread_waiting_count_code_prev;
+    
 }
 @synthesize queue = _queue;
+@synthesize watchdogTimeInterval = _watchdogTimeInterval;
 
 +(instancetype)singleton{
     
@@ -262,7 +275,7 @@ typedef struct BacktraceStruct{
         
         _creationDate           = [NSDate date];
         _monitorThreadChangesAboveThreadCount = 0;
-        
+        _watchdogTimeInterval = _threadsCheckTimeInterval = 0;
         [self createQueue];
         
     }
@@ -289,9 +302,9 @@ typedef struct BacktraceStruct{
     crashReporter.deleteBehaviorAfterSendAll = KSCDeleteOnSucess;
     crashReporter.handlingCrashTypes = KSCrashTypeUserReported;
     crashReporter.sink = [[KSCrashReportSinkQuincy sinkWithURL:kQuincyReportURL
-                                                     userIDKey:nil
-                                                   userNameKey:nil
-                                               contactEmailKey:nil
+                                                     userIDKey:self.userId
+                                                   userNameKey:self.userName
+                                               contactEmailKey:self.userEmail
                                           crashDescriptionKeys:nil] defaultCrashReportFilterSet];
 
     
@@ -304,13 +317,19 @@ typedef struct BacktraceStruct{
 
 #pragma mark - Watchdog:
 
--(void)startWatchDogWithTimeInterval:(NSTimeInterval)timeInterval{
+-(void)startWatchDogWithTimeInterval:(NSTimeInterval)timeInterval userId:(NSString *)userId userName:(NSString *)userName contactEmail:(NSString *)contactEmail{
 
     
     if(_watchdogBackgoundTimer.running)return;
+    _watchdogTimeInterval = timeInterval;
+    self.userEmail = contactEmail;
+    self.userId = userId;
+    self.userName = userName;
     
     [self installCrashHandler];
-    _thread_count_prev = _thread_count_mark = 0;
+    _thread_count_prev = _thread_count_mark = _thread_waititng_count_mark = _thread_waiting_count_prev = _thread_waiting_count_code_prev = 0;
+    _deadlock_operation_time_start_last = _threads_check_operation_time_start_last = 0;
+
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
@@ -327,7 +346,7 @@ typedef struct BacktraceStruct{
                 [self createWatchdogQueue];
             }
             
-            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:timeInterval duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
+            _watchdogBackgoundTimer = [LMGCDTimer timerWithInterval:_watchdogTimeInterval duration:0 leeway:0.1 repeat:YES startImmidiately:YES queue:_watchdog_queue block:^{
                 
                 [weakSelf watchdogOperation];
                 
@@ -336,7 +355,7 @@ typedef struct BacktraceStruct{
             _watchdogBackgoundTimer.name = @"watchdog";
         }else{
             
-            _watchdogBackgoundTimer.interval = timeInterval;
+            _watchdogBackgoundTimer.interval = _watchdogTimeInterval;
             [_watchdogBackgoundTimer resume];
         }
     
@@ -390,14 +409,12 @@ typedef struct BacktraceStruct{
     [self sendAllreportsToQuincyKit];
 }
 
+-(void)deadlockCheckOperation{
 
--(void)watchdogOperation{
-    
-    
     if(!_waiting_in_main_queue){
-    
+        
         _waiting_in_main_queue = YES;
-        _time_start = mach_absolute_time();
+        _potential_deadlock_time_start = mach_absolute_time();
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
@@ -406,33 +423,37 @@ typedef struct BacktraceStruct{
             if (_deadlock) {
                 
                 uint64_t tNow = mach_absolute_time();
-                _deadlock = NO;                
-                NSTimeInterval seconds = timeIntervalFromMach(tNow - _time_start);
+                _deadlock = NO;
+                NSTimeInterval seconds = timeIntervalFromMach(tNow - _potential_deadlock_time_start);
                 
                 [_delegate LMGCDWatchdog:self deadlockDidFinishWithduration:seconds];
-            
-            }
-            
-            if (_monitorThreadChangesAboveThreadCount) {
-            
-//                [self threadsCountChange];
-                [self threadsAnalyticsSimple];
+                
             }
             
             _deadlock = NO;
-#ifdef DEBUG
             
-            uint64_t tNow = mach_absolute_time();
-            printf("\n watchOperation:                     : %f sec (%llu)" , timeIntervalFromMach(tNow - _time_start), tNow - _time_start);
-#endif
+#ifdef DEBUG_PERFORMANCE
+            
+            uint64_t te = mach_absolute_time();
+            uint64_t cpu_cycles = te - _potential_deadlock_time_start;
+            NSTimeInterval dt = timeIntervalFromMach(cpu_cycles);
+            NSTimeInterval available = 0.005;
+            NSTimeInterval percent = (dt / available) * 100.0;
+            if(percent >= 40){
+            
+                printf("\n*** PERFORMANCE RISK: deadlockCheckOperation time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
+            }
+            
+            
+            #endif
             
         });
-
+        
     }else{
-    
+        
         if (!_deadlock) {
             _deadlock = YES;
-             [[KSCrash sharedInstance] reportUserException:@"Deadlock" reason:@"main thread deadlocked" lineOfCode:@"--- no line of code provided" stackTrace:nil terminateProgram:NO];
+            [[KSCrash sharedInstance] reportUserException:@"Deadlock" reason:@"main thread deadlocked" lineOfCode:@"--- no line of code provided" stackTrace:nil terminateProgram:NO];
             //[self threadsInfo];
             //[self cpuInfo];
             
@@ -440,8 +461,44 @@ typedef struct BacktraceStruct{
             
             //printf("<!");
         }
-
+        
     }
+    
+}
+-(void)watchdogOperation{
+
+    _watchdog_operation_time_start = mach_absolute_time();
+    
+    
+    if (_watchdogTimeInterval > 0){
+    
+        NSTimeInterval tsw = timeIntervalFromMach(_watchdog_operation_time_start - _deadlock_operation_time_start_last);
+        //printf("\n - tsw: %f sec", tsw);
+        
+        if(tsw >= _deadlockCheckTimeInterval) {
+        
+            //printf("\n - tsw: %f sec >= %f sec (_deadlockCheckTimeInterval) - OK", tsw, _deadlockCheckTimeInterval);
+            _deadlock_operation_time_start_last = _watchdog_operation_time_start;
+            [self deadlockCheckOperation];
+        }
+    }
+    
+    
+    
+    if (_monitorThreadChangesAboveThreadCount && !_deadlock && _threadsCheckTimeInterval > 0){
+    
+        NSTimeInterval tst = timeIntervalFromMach(_watchdog_operation_time_start - _threads_check_operation_time_start_last);
+        //printf("\n - tst: %f sec", tst);
+        if(tst >= _threadsCheckTimeInterval) {
+        
+            //printf("\n - tst: %f sec >= %f sec (_threadsCheckTimeInterval) - OK", tst, _threadsCheckTimeInterval);
+            _threads_check_operation_time_start_last = _watchdog_operation_time_start;
+            [self threadsAnalyticsSimple];
+        }
+    }
+
+    
+    _watchdog_operation_time_start_prev = _watchdog_operation_time_start;
     
 }
 
@@ -714,21 +771,27 @@ typedef struct BacktraceStruct{
 }
 -(BOOL)threadsAnalyticsSimple{
     
-    /* Threads */
     
+    mach_msg_type_number_t thread_running_count = 0;
+    mach_msg_type_number_t thread_waiting_count = 0;
+    mach_msg_type_number_t thread_stopped_count = 0;
+    mach_msg_type_number_t thread_halted__count = 0;
+    mach_msg_type_number_t thread_uninter_count = 0;
+    mach_msg_type_number_t thread_waiting_count_code = 0;
+    
+    /* Threads */
+#ifdef DEBUG_PERFORMANCE
     uint64_t ts     = mach_absolute_time();
+#endif
+    
+    thread_act_array_t threads;
+    mach_msg_type_number_t thread_count = 0;
+    
     const task_t    this_task = mach_task_self();
     const thread_t  this_thread = mach_thread_self();
     
-    kern_return_t kr;
-    
-    thread_act_array_t threads;
-    mach_msg_type_number_t thread_count;
-    
-    kr = task_threads(this_task, &threads, &thread_count);
-    
-    
-    // 1. Get a list of all threads:
+    // 1. Get a list of all threads (with count):
+    kern_return_t kr = task_threads(this_task, &threads, &thread_count);
     
     if (kr != KERN_SUCCESS) {
         printf("error getting threads: %s", mach_error_string(kr));
@@ -752,6 +815,10 @@ typedef struct BacktraceStruct{
         thread_basic_info_t basic_info_th = (thread_basic_info_t)thinfo;
         integer_t run_state = basic_info_th->run_state;
         
+        qn = ksmach_getThreadQueueName(thread, queue_name, 100);
+        tn = ksmach_getThreadName(thread, thread_name, 100);
+        
+        
         /*
          
          arm_unified_thread_state state;
@@ -767,17 +834,18 @@ typedef struct BacktraceStruct{
          return 0;
          }
          */
-        
-        if (run_state != _threadsStates[thread]) {
+    
             
             char const *sss;
             char const *pref;
+        
             switch (run_state) {
                 case TH_STATE_RUNNING:
                 {
                     
                     sss = "running";
                     pref = "--- > ";
+                    thread_running_count++;
                 }
                     break;
                 case TH_STATE_STOPPED:
@@ -785,6 +853,7 @@ typedef struct BacktraceStruct{
                     
                     sss = "stopped";
                     pref = "--- < ";
+                    thread_stopped_count++;
                 }
                     
                     break;
@@ -792,6 +861,8 @@ typedef struct BacktraceStruct{
                 {
                     
                     sss = "waiting";
+                    thread_waiting_count++;
+                    thread_waiting_count_code += thread;
                     pref = "--- < ";
                     
                 }
@@ -800,6 +871,7 @@ typedef struct BacktraceStruct{
                 case TH_STATE_UNINTERRUPTIBLE:
                 {
                     sss = "TH_STATE_UNINTERRUPTIBLE";
+                    thread_uninter_count++;
                     pref = "--- ! ";
                 }
                     //printf("\nthread %u is TH_STATE_UNINTERRUPTIBLE", thread);
@@ -808,6 +880,7 @@ typedef struct BacktraceStruct{
                     //printf("\nthread %u is TH_STATE_HALTED", thread);
                     sss = "halted";
                     pref = "--- # ";
+                    thread_halted__count++;
                     break;
                 default:
                     sss  = "unknown";
@@ -815,69 +888,51 @@ typedef struct BacktraceStruct{
                     break;
             }
             
-            
-            qn = ksmach_getThreadQueueName(thread, queue_name, 100);
-            tn = ksmach_getThreadName(thread, thread_name, 100);
+        
+    //printf("\n --- %i/%i %s \t thread %u (name: %s) (queue: %s)", i + 1, thread_count, sss, thread, thread_name, queue_name);
+
+        if (run_state != _threadsStates[thread]) {
             
             NSString *aaa = [NSString stringWithFormat:@" %s thread %u (name: %s) (queue: %s) is %s | threads: %i", pref, thread, thread_name, queue_name, sss, thread_count];
             
-            
-            printf("\n --- %i.%i thread %u (name: %s) (queue: %s) is %s", i, thread_count, thread, thread_name, queue_name, sss);
+
             [_delegate LMGCDWatchdog:self didDetectThreadStateChange:aaa];
         }
         
-        
-        
         _threadsStates[thread] = run_state;
-        
         
         mach_port_deallocate(this_task, thread);
     }
     
+
     
+    if (_thread_waiting_count_code_prev != thread_waiting_count_code) {
+        
+        printf("\n*** waiting thread count changed (code: %i -> %i) to: %i/%i from: %i/%i (r: %i, w: %i, s: %i, h: %i, u: %i)", thread_waiting_count_code, _thread_waiting_count_code_prev, thread_waiting_count, thread_count, _thread_waiting_count_prev, thread_count, thread_running_count, thread_waiting_count, thread_stopped_count, thread_halted__count, thread_uninter_count);
+    }
+    
+    _thread_count_prev = thread_count;
+    _thread_waiting_count_prev = thread_waiting_count;
+    _thread_waiting_count_code_prev = thread_waiting_count_code;
     //printf("\n *************** \n");
     
     mach_port_deallocate(this_task, this_thread);
     vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
     
-    uint64_t te = mach_absolute_time();
     
-    //printf("\n analytics sec: %f (%llu)\n\n" , timeIntervalFromMach(te - ts), te - ts);
-    return NO;
-}
 
--(BOOL)threadsCountChange{
+#ifdef DEBUG_PERFORMANCE
     
-    /* Threads */
-    
-    uint64_t ts     = mach_absolute_time();
-    const task_t    this_task = mach_task_self();
-    const thread_t  this_thread = mach_thread_self();
-    
-    kern_return_t kr;
-    
-    thread_act_array_t threads;
-    mach_msg_type_number_t thread_count;
-    
-    kr = task_threads(this_task, &threads, &thread_count);
-    
-    
-    // 1. Get a list of all threads:
-    
-    if (kr != KERN_SUCCESS) {
-        printf("error getting threads: %s", mach_error_string(kr));
-        return NO;
+    uint64_t te = mach_absolute_time();
+    uint64_t cpu_cycles = te - ts;
+    NSTimeInterval dt = timeIntervalFromMach(cpu_cycles);
+    NSTimeInterval available = 0.005;
+    NSTimeInterval percent = (dt / available) * 100.0;
+    if(percent >= 40){
+    printf("\n*** PERFORMANCE RISK: threadsAnalyticsSimple time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
     }
     
-    mach_port_deallocate(this_task, this_thread);
-    vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
-    
-#ifdef DEBUG
-    uint64_t te = mach_absolute_time();
-    printf("\nthread count: %i  (prev: %i), analytics: %f sec (%llu)" , thread_count, _thread_count_prev, timeIntervalFromMach(te - ts), te - ts);
 #endif
-    
-    _thread_count_prev = thread_count;
     return NO;
 }
 

@@ -48,12 +48,20 @@ typedef void(^VoidBlock)();
 @property (nonatomic, assign) id<LMGCDWatchdogDelegate>delegate;
 @property (nonatomic) int monitorThreadChangesAboveThreadCount;
 
+@property (nonatomic) NSTimeInterval deadlockCheckTimeInterval;
+@property (nonatomic) NSTimeInterval threadsCheckTimeInterval;
+@property (nonatomic, strong) NSString *userId;
+@property (nonatomic, strong) NSString *userEmail;
+@property (nonatomic, strong) NSString *userName;
+
+@property (nonatomic, readonly) NSTimeInterval watchdogTimeInterval;
+
 +(instancetype)singleton;
 
 #pragma mark - Watchdog:
 
 -(void)stopWatchDog;
--(void)startWatchDogWithTimeInterval:(NSTimeInterval)timeInterval;
+-(void)startWatchDogWithTimeInterval:(NSTimeInterval)timeInterval userId:(NSString *)userId userName:(NSString *)userName contactEmail:(NSString *)contactEmail;
 
 -(float)cpuInfo;
 
