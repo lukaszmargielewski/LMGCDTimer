@@ -453,9 +453,10 @@ typedef struct BacktraceStruct{
         
         if (!_deadlock) {
             _deadlock = YES;
-            [[KSCrash sharedInstance] reportUserException:@"Deadlock" reason:@"main thread deadlocked" lineOfCode:@"--- no line of code provided" stackTrace:nil terminateProgram:NO];
-            //[self threadsInfo];
-            //[self cpuInfo];
+            [self cpuInfo];
+            NSString *reason = [NSString stringWithFormat:@"Deadlock for user: %@", self.userEmail];
+            NSString *lineOfCode = [NSString stringWithFormat:@"Deadlock time (min): %f sec\nCPU usage: %.2f%%",_deadlockCheckTimeInterval, _cpuUsagePercent];
+            [[KSCrash sharedInstance] reportUserException:@"Deadlock" reason:reason lineOfCode:lineOfCode stackTrace:nil terminateProgram:NO];
             
             [_delegate LMGCDWatchdogDidDetectLongerDeadlock:self cpuUsagePercent:_cpuUsagePercent];
             
