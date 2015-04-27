@@ -384,15 +384,15 @@ typedef struct BacktraceStruct{
          if(completed)
          {
              [blockCR deleteAllReports];
-             title = [NSString stringWithFormat:@"Success (%lu)", (unsigned long)filteredReports.count];
-             message = [NSString stringWithFormat:@"Successfully sent %lu crash / deadlock reports", (unsigned long)filteredReports.count];
+             title = [NSString stringWithFormat:@"Successfully sent %lu deadlock reports.", (unsigned long)filteredReports.count];
+             message = [NSString stringWithFormat:@"If you entountered problem with autotracker - send manual report as well..."];
              
          }
          else
          {
              NSLog(@"Failed to send reports: %@", error);
-             title = [NSString stringWithFormat:@"Failed (%lu)", (unsigned long)filteredReports.count];
-             message = [NSString stringWithFormat:@"Failed to send reports %lu: %@\nerror: %@", (unsigned long)filteredReports.count, error];
+             title = [NSString stringWithFormat:@"Failed to send %lu deadlock reports", (unsigned long)filteredReports.count];
+             message = [NSString stringWithFormat:@"%@\n\nYou can retry by going background / foreground again.", error];
              
 
              
