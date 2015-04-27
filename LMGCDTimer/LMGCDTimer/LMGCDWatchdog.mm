@@ -108,13 +108,12 @@ typedef struct BacktraceStruct{
     
     NSDate *_creationDate;
     
+    bool qn;
+    bool tn;
     char queue_name[100];
     char thread_name[100];
     
     int backtraceLength;
-    
-    bool qn;
-    bool tn;
     
     NSMutableArray *_asyncBlocks;
     NSMutableArray *_syncBlocks;
@@ -416,11 +415,13 @@ typedef struct BacktraceStruct{
             
             if (_monitorThreadChangesAboveThreadCount) {
             
-                [self threadsCountChange];
+//                [self threadsCountChange];
+                [self threadsAnalyticsSimple];
             }
             
             _deadlock = NO;
 #ifdef DEBUG
+            
             uint64_t tNow = mach_absolute_time();
             printf("\n watchOperation:                     : %f sec (%llu)" , timeIntervalFromMach(tNow - _time_start), tNow - _time_start);
 #endif
@@ -547,6 +548,7 @@ typedef struct BacktraceStruct{
         return;
     }
 
+ 
     
     for (mach_msg_type_number_t i = 0; i < thread_count; i++) {
         
@@ -814,13 +816,13 @@ typedef struct BacktraceStruct{
             }
             
             
-            //bool qn = ksmach_getThreadQueueName(thread, queue_name, 100);
-            //bool tn = ksmach_getThreadName(thread, thread_name, 100);
+            qn = ksmach_getThreadQueueName(thread, queue_name, 100);
+            tn = ksmach_getThreadName(thread, thread_name, 100);
             
             NSString *aaa = [NSString stringWithFormat:@" %s thread %u (name: %s) (queue: %s) is %s | threads: %i", pref, thread, thread_name, queue_name, sss, thread_count];
             
             
-            //printf("\n --- thread %u (name: %s) (queue: %s) is %s", thread, thread_name, queue_name, sss);
+            printf("\n --- %i.%i thread %u (name: %s) (queue: %s) is %s", i, thread_count, thread, thread_name, queue_name, sss);
             [_delegate LMGCDWatchdog:self didDetectThreadStateChange:aaa];
         }
         
