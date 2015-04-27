@@ -289,14 +289,6 @@ typedef struct BacktraceStruct{
     crashReporter.zombieCacheSize = 16384;
     crashReporter.searchThreadNames = YES;
     crashReporter.searchQueueNames = YES;
-    //handler.printTraceToStdout = YES;
-    crashReporter.userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                        @"\"quote\"", @"quoted value",
-                        @"blah", @"\"quoted\" key",
-                        @"bslash\\", @"bslash value",
-                        @"x", @"bslash\\key",
-                        @"intl", @"テスト",
-                        nil];
     
     // Don't delete after send for this demo.
     crashReporter.deleteBehaviorAfterSendAll = KSCDeleteOnSucess;
