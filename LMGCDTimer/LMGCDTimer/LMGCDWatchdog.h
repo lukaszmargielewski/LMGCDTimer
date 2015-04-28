@@ -65,17 +65,6 @@ typedef void(^VoidBlock)();
 
 -(float)cpuInfo;
 
-
--(NSArray *)getALlLogFiles;
--(NSArray *)getAllLogFilesSorted;
--(void)deleteOldLogFiles;
-
-+(void)addAsyncBlockName:(NSString *)blockName;
-+(void)removeAsyncBlockName:(NSString *)blockName;
-
-+(void)addSyncBlockName:(NSString *)blockName;
-+(void)removeSyncBlockName:(NSString *)blockName;
-
 @end
 
 #pragma mark - GCD:
@@ -96,9 +85,7 @@ static inline void watch_disp_async(NSString *name, dispatch_queue_t queue, Void
     
     dispatch_async(queue, ^{
         
-        [LMGCDWatchdog addAsyncBlockName:name];
         block();
-        [LMGCDWatchdog removeAsyncBlockName:name];
     });
 
     
@@ -121,9 +108,7 @@ static inline void watch_disp_sync(NSString *name, dispatch_queue_t queue, VoidB
     
     dispatch_sync(queue, ^{
         
-        [LMGCDWatchdog addSyncBlockName:name];
         block();
-        [LMGCDWatchdog removeSyncBlockName:name];
         
     });
 

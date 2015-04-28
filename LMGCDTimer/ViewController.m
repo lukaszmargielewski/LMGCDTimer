@@ -112,7 +112,7 @@
 }
 -(IBAction)startWatchdog:(id)sender{
     
-    [[LMGCDWatchdog singleton] startWatchDogWithTimeInterval:0.5];
+    [[LMGCDWatchdog singleton] startWatchDogWithTimeInterval:0.5 userId:nil userName:nil contactEmail:nil];
 }
 
 -(IBAction)scheduleDeadlock:(id)sender{

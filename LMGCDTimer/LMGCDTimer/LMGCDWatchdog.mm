@@ -8,6 +8,15 @@
 
 #import "LMGCDWatchdog.h"
 #import "LMGCDTimer.h"
+#import "KSCrash.h"
+#import "KSCrashAdvanced.h"
+
+
+///*
+#import "KSMach.h"
+#import "KSBacktrace.h"
+#import "KSBacktrace_Private.h"
+#import "KSCrashReportSinkQuincyHockey.h"
 
 #include <sys/sysctl.h>
 #include <sys/types.h>
@@ -22,16 +31,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
-#import "KSCrash.h"
-#import "KSCrashAdvanced.h"
-
-
-///*
-#import "KSMach.h"
-#import "KSBacktrace.h"
-#import "KSBacktrace_Private.h"
-#import "KSCrashReportSinkQuincyHockey.h"
 #include <map>
 #include <utility>
 
@@ -205,6 +204,7 @@ typedef struct BacktraceStruct{
     }
     
 }
+
 -(void)createLogFile{
 
     NSFileManager *fm = [NSFileManager defaultManager];
@@ -282,8 +282,7 @@ typedef struct BacktraceStruct{
     return self;
 }
 
-- (void) installCrashHandler
-{
+- (void) installCrashHandler{
     crashReporter = [KSCrash sharedInstance];
     
     crashReporter.zombieCacheSize = 16384;
@@ -445,7 +444,7 @@ typedef struct BacktraceStruct{
         
         if (!_deadlock) {
             _deadlock = YES;
-            [self cpuInfo];
+
             NSString *reason = [NSString stringWithFormat:@"Deadlock for user: %@", self.userEmail];
             NSString *lineOfCode = [NSString stringWithFormat:@"Deadlock time (min): %f sec\nCPU usage: %.2f%%",_deadlockCheckTimeInterval, _cpuUsagePercent];
             [[KSCrash sharedInstance] reportUserException:@"Deadlock" reason:reason lineOfCode:lineOfCode stackTrace:nil terminateProgram:NO];
@@ -640,7 +639,6 @@ typedef struct BacktraceStruct{
     
     if (file_size > kMaxLogFileSizeInBytes) {
         [self createLogFile];
-        [self getLogFilesBeforeCreation];
     }
 }
 
@@ -812,23 +810,6 @@ typedef struct BacktraceStruct{
         tn = ksmach_getThreadName(thread, thread_name, 100);
         
         
-        /*
-         
-         arm_unified_thread_state state;
-         mach_msg_type_number_t state_count = ARM_UNIFIED_THREAD_STATE_COUNT;
-         kr = thread_get_state(thread, ARM_UNIFIED_THREAD_STATE, (thread_state_t) &state, &state_count);
-         
-         */
-        /*
-         STRUCT_MCONTEXT_L machineContext;
-         
-         if(!ksmach_threadState(thread, &machineContext))
-         {
-         return 0;
-         }
-         */
-    
-            
             char const *sss;
             char const *pref;
         
@@ -928,167 +909,6 @@ typedef struct BacktraceStruct{
 #endif
     return NO;
 }
-
-
-#pragma mark - Log files:
-
--(NSArray *)getAllLogFilesSorted{
-    
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    NSError *err = nil;
-    NSArray *fff = [self getALlLogFiles];
-    
-    fff = [fff sortedArrayUsingComparator:^NSComparisonResult(NSString *path1, NSString *path2){
-    
-        NSError *err = nil;
-        NSDictionary *attributes1 = [fileManager attributesOfItemAtPath:path1 error:&err];
-        NSDictionary *attributes2 = [fileManager attributesOfItemAtPath:path2 error:&err];
-        
-        if (attributes1 && attributes2) {
-            
-            NSDate *date1 = [attributes1 fileCreationDate];
-            NSDate *date2 = [attributes2 fileCreationDate];
-            
-            if (date1 && date2) {
-                
-                return  [date1 compare:date2];
-            }
-        }
-        
-        return NSOrderedSame;
-        
-    }];
-    
-    //DLog(@"all log files sorted(%lu): %@", fff.count, fff);
-    return fff;
-}
-
-
--(NSArray *)getALlLogFiles{
-
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    NSError *err = nil;
-    NSArray *fff = [fileManager contentsOfDirectoryAtPath:_logDir error:&err];
-    fff =  [fff filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"pathExtension = 'log'"]];
-    NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:fff.count];
-    
-    for (NSString *fileName in fff) {
-        
-        NSString *aPath = [_logDir stringByAppendingPathComponent:fileName];
-        
-        if (_logFilePath && [_logFilePath isEqualToString:aPath]) {
-            continue;
-        }
-
-        [results addObject:aPath];
-    }
-    
-     //DLog(@"all log files (%lu): %@", results.count, results);
-    return results;
-}
--(NSArray *)getLogFilesBeforeCreation{
-
-    NSArray *all = [self getALlLogFiles];
-    
-    NSMutableArray *results = [[NSMutableArray alloc] initWithCapacity:all.count];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    //DLog(@"all log files (%lu): %@", all.count, all);
-    
-    for (NSString *filePath in all) {
-        
-        NSError *err = nil;
-        NSDictionary *attributes = [fileManager attributesOfItemAtPath:filePath
-                                                                 error:&err];
-        
-        if (attributes) {
-        
-            NSDate *date = [attributes fileCreationDate];
-            
-            if (date && [date compare:_creationDate] == NSOrderedAscending) {
-                [results addObject:filePath];
-            }
-        }
-        
-        
-    }
-    //DLog(@"bef log files (%lu): %@", (unsigned long)results.count, results);
-    
-    return results;
-}
-
--(void)deleteOldLogFiles{
-
-    close(_fileDescriptor);
-    
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    NSArray *allToDelete = [self getALlLogFiles];
-    
-    for(NSString *filePath in allToDelete){
-    
-        if (_logFilePath && [_logFilePath isEqualToString:filePath]) {
-            continue;
-        }
-        
-        NSError *error = nil;
-        [fileManager removeItemAtPath:filePath error:&error];
-    }
-    
-    [self createLogFile];
-}
-
-
-+(void)addAsyncBlockName:(NSString *)blockName{
-
-    [[LMGCDWatchdog singleton] addAsyncBlockName:blockName];
-
-}
-+(void)removeAsyncBlockName:(NSString *)blockName{
-
-    [[LMGCDWatchdog singleton] removeAsyncBlockName:blockName];
-}
-
-+(void)addSyncBlockName:(NSString *)blockName{
-
-    [[LMGCDWatchdog singleton] addSyncBlockName:blockName];
-}
-+(void)removeSyncBlockName:(NSString *)blockName{
-
-    [[LMGCDWatchdog singleton] removeSyncBlockName:blockName];
-    
-}
-
-
-
--(void)addAsyncBlockName:(NSString *)blockName{
-    
-    if(!_asyncBlocks)
-        _asyncBlocks = [[NSMutableArray alloc] initWithCapacity:50];
-    
-    //NSLog(@"async start: %@", blockName);
-    
-    [_asyncBlocks addObject:blockName];
-}
--(void)removeAsyncBlockName:(NSString *)blockName{
-    
-    [_asyncBlocks removeObject:blockName];
-    //NSLog(@"async end: %@", blockName);
-}
-
--(void)addSyncBlockName:(NSString *)blockName{
-    
-    //NSLog(@"sync start: %@", blockName);
-    [_syncBlocks addObject:blockName];
-}
--(void)removeSyncBlockName:(NSString *)blockName{
-    
-    [_syncBlocks removeObject:blockName];
-    //NSLog(@"sync end: %@", blockName);
-}
-
 
 @end
 
