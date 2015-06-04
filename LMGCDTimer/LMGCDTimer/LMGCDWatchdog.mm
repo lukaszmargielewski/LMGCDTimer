@@ -401,7 +401,7 @@ typedef struct BacktraceStruct{
 }
 
 -(void)deadlockCheckOperation{
-
+    
     if(!_waiting_in_main_queue){
         
         _waiting_in_main_queue = YES;
@@ -428,11 +428,11 @@ typedef struct BacktraceStruct{
             uint64_t te = mach_absolute_time();
             uint64_t cpu_cycles = te - _potential_deadlock_time_start;
             NSTimeInterval dt = timeIntervalFromMach(cpu_cycles);
-            NSTimeInterval available = 0.005;
+            NSTimeInterval available = 0.01;
             NSTimeInterval percent = (dt / available) * 100.0;
             if(percent >= 40){
             
-                printf("\n*** PERFORMANCE RISK: deadlockCheckOperation time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
+                MILogWarn(@"\n*** PERFORMANCE RISK: deadlockCheckOperation time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
             }
             
             
@@ -460,7 +460,6 @@ typedef struct BacktraceStruct{
 -(void)watchdogOperation{
 
     _watchdog_operation_time_start = mach_absolute_time();
-    
     
     if (_watchdogTimeInterval > 0){
     
@@ -561,7 +560,7 @@ typedef struct BacktraceStruct{
         
         _cpuUsagePercent = (inUseAll / totalAll) * 100;
 
-        dprintf(_fileDescriptor, "- CPU usage: %f %%\n", _cpuUsagePercent);
+        //dprintf(_fileDescriptor, "- CPU usage: %f %%\n", _cpuUsagePercent);
         
         return _cpuUsagePercent;
         
@@ -592,7 +591,7 @@ typedef struct BacktraceStruct{
     if (kr != KERN_SUCCESS) {
         
         thread_count = 0;
-        printf("error getting threads: %s", mach_error_string(kr));
+        //printf("error getting threads: %s", mach_error_string(kr));
     
         return;
     }
@@ -612,7 +611,7 @@ typedef struct BacktraceStruct{
         qn = ksmach_getThreadQueueName(thread, queue_name, 100);
         tn = ksmach_getThreadName(thread, thread_name, 100);
     
-        dprintf(_fileDescriptor, "\n*   %i thread %i (%s) queue: %s\n", i, thread, thread_name, queue_name);
+        //dprintf(_fileDescriptor, "\n*   %i thread %i (%s) queue: %s\n", i, thread, thread_name, queue_name);
         backtrace_symbols_fd(backtrace, backtraceLength, _fileDescriptor);
     
         if((kr = thread_resume(thread)) != KERN_SUCCESS){}
@@ -624,7 +623,7 @@ typedef struct BacktraceStruct{
     double dt_sec = timeIntervalFromMach(dt);
     time_t raw_time = _firstLogTimeInterval + dt_sec;
     
-    dprintf(_fileDescriptor, "-------------------\n- time: %s-------------------\n", ctime(&raw_time));
+    //dprintf(_fileDescriptor, "-------------------\n- time: %s-------------------\n", ctime(&raw_time));
     //printf("\n -- %s --- (%llu / %f sec) \n", ctime(&raw_time), dt, dt_sec);
     
     
@@ -632,8 +631,8 @@ typedef struct BacktraceStruct{
     vm_deallocate(this_task, (vm_address_t)threads, sizeof(thread_t) * thread_count);
 
     uint64_t te     = mach_absolute_time();
-    //dprintf(_fileDescriptor, "\n---------\n- time: %s\n---------\n\n", ctime(&raw_time));
-    printf("\nthread info cycles: %llu / time: %f sec\n", te - ts, timeIntervalFromMach(te - ts));
+    ////dprintf(_fileDescriptor, "\n---------\n- time: %s\n---------\n\n", ctime(&raw_time));
+    //printf("\nthread info cycles: %llu / time: %f sec\n", te - ts, timeIntervalFromMach(te - ts));
     
     off_t file_size = lseek(_fileDescriptor, 0, SEEK_END);
     
@@ -661,7 +660,7 @@ typedef struct BacktraceStruct{
     // 1. Get a list of all threads:
     
     if (kr != KERN_SUCCESS) {
-        printf("error getting threads: %s", mach_error_string(kr));
+        //printf("error getting threads: %s", mach_error_string(kr));
         return NO;
     }
     
@@ -757,7 +756,7 @@ typedef struct BacktraceStruct{
     
     uint64_t te = mach_absolute_time();
     
-    printf("\n analytics: %f sec (%llu)" , timeIntervalFromMach(te - ts), te - ts);
+    //printf("\n analytics: %f sec (%llu)" , timeIntervalFromMach(te - ts), te - ts);
     return NO;
 }
 -(BOOL)threadsAnalyticsSimple{
@@ -785,7 +784,7 @@ typedef struct BacktraceStruct{
     kern_return_t kr = task_threads(this_task, &threads, &thread_count);
     
     if (kr != KERN_SUCCESS) {
-        printf("error getting threads: %s", mach_error_string(kr));
+        //printf("error getting threads: %s", mach_error_string(kr));
         return NO;
     }
     
@@ -882,7 +881,7 @@ typedef struct BacktraceStruct{
     
     if (_thread_waiting_count_code_prev != thread_waiting_count_code) {
         
-        printf("\n*** waiting thread count changed (code: %i -> %i) to: %i/%i from: %i/%i (r: %i, w: %i, s: %i, h: %i, u: %i)", thread_waiting_count_code, _thread_waiting_count_code_prev, thread_waiting_count, thread_count, _thread_waiting_count_prev, thread_count, thread_running_count, thread_waiting_count, thread_stopped_count, thread_halted__count, thread_uninter_count);
+        //printf("\n*** waiting thread count changed (code: %i -> %i) to: %i/%i from: %i/%i (r: %i, w: %i, s: %i, h: %i, u: %i)", thread_waiting_count_code, _thread_waiting_count_code_prev, thread_waiting_count, thread_count, _thread_waiting_count_prev, thread_count, thread_running_count, thread_waiting_count, thread_stopped_count, thread_halted__count, thread_uninter_count);
     }
     
     _thread_count_prev = thread_count;
@@ -900,10 +899,10 @@ typedef struct BacktraceStruct{
     uint64_t te = mach_absolute_time();
     uint64_t cpu_cycles = te - ts;
     NSTimeInterval dt = timeIntervalFromMach(cpu_cycles);
-    NSTimeInterval available = 0.005;
+    NSTimeInterval available = 0.01;
     NSTimeInterval percent = (dt / available) * 100.0;
     if(percent >= 40){
-    printf("\n*** PERFORMANCE RISK: threadsAnalyticsSimple time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
+    MILogWarn(@"\n*** PERFORMANCE RISK: threadsAnalyticsSimple time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
     }
     
 #endif
