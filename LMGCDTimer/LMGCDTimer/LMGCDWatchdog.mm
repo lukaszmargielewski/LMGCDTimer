@@ -566,7 +566,7 @@ typedef struct BacktraceStruct{
         return _cpuUsagePercent;
         
     } else {
-        //DDLogCInfo(@"cpu sample error!");
+        //MILogInfo(@"cpu sample error!");
     }
     
 

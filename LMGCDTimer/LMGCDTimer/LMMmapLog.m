@@ -306,7 +306,7 @@ static inline NSTimeInterval timeIntervalFromMach(uint64_t mach_time){
 -(void)log:( const char *) text{
 
     
-    text = "Decimals: %d %ld\n", 1977, 650000L;
+    //text = "Decimals: %d %ld\n", 1977, 650000L;
     
     uint64_t tss = mach_absolute_time();
     

@@ -124,10 +124,10 @@
 
 -(void)invalidate{
     
-    //DDLogCInfo(@"%@ invalidating", _name);
+    //MILogInfo(@"%@ invalidating", _name);
     if (_running) {
         _running = NO;
-        //DDLogCInfo(@"%@ invalidated", _name);
+        //MILogInfo(@"%@ invalidated", _name);
         dispatch_source_cancel(_dispatchSource);
     }
 }
