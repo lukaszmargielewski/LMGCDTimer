@@ -432,7 +432,7 @@ typedef struct BacktraceStruct{
             NSTimeInterval percent = (dt / available) * 100.0;
             if(percent >= 40){
             
-                MILogWarn(@"\n*** PERFORMANCE RISK: deadlockCheckOperation time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
+                //MILogWarn(@"\n*** PERFORMANCE RISK: deadlockCheckOperation time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
             }
             
             
@@ -902,7 +902,7 @@ typedef struct BacktraceStruct{
     NSTimeInterval available = 0.01;
     NSTimeInterval percent = (dt / available) * 100.0;
     if(percent >= 40){
-    MILogWarn(@"\n*** PERFORMANCE RISK: threadsAnalyticsSimple time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
+    //MILogWarn(@"\n*** PERFORMANCE RISK: threadsAnalyticsSimple time: %f sec (%llu) | %.1f%% of %f sec" , dt, cpu_cycles, percent, available);
     }
     
 #endif
